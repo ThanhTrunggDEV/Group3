@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BitCoin_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f58bce44f071f7c2cd0cb82019fe750bdf586568")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b48c11f1408431f047892adb18d00f56f63c51c")]
 [assembly: System.Reflection.AssemblyProductAttribute("BitCoin_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BitCoin_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
