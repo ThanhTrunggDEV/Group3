@@ -8,13 +8,13 @@
     "KeepPunctuations": false,
     "AllowQuoting": false,
     "Type": "TabularFile",
-    "FilePath": "D:\\Coding Space\\Project\\Group3\\gold_price_forecasting_dataset.csv",
+    "FilePath": "D:\\Coding Space\\Project\\Group3\\FINAL_USO.csv",
     "Delimiter": ",",
     "DecimalMarker": ".",
     "HasHeader": true,
     "ColumnProperties": [
       {
-        "ColumnName": "date",
+        "ColumnName": "Date",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "String",
         "IsCategorical": false,
@@ -22,7 +22,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "adj close",
+        "ColumnName": "Open",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -30,7 +30,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "close",
+        "ColumnName": "High",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -38,7 +38,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "high",
+        "ColumnName": "Low",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -46,7 +46,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "low",
+        "ColumnName": "Close",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -54,7 +54,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "open",
+        "ColumnName": "Adj Close",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -62,7 +62,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "volume",
+        "ColumnName": "Volume",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -70,7 +70,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "ma_7",
+        "ColumnName": "SP_open",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -78,7 +78,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "ma_30",
+        "ColumnName": "SP_high",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -86,7 +86,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "ma_90",
+        "ColumnName": "SP_low",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -94,7 +94,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "daily_return",
+        "ColumnName": "SP_close",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -102,7 +102,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "volatility_7",
+        "ColumnName": "SP_Ajclose",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -110,7 +110,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "volatility_30",
+        "ColumnName": "SP_volume",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -118,7 +118,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "rsi",
+        "ColumnName": "DJ_open",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -126,7 +126,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "macd",
+        "ColumnName": "DJ_high",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -134,7 +134,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "macd_signal",
+        "ColumnName": "DJ_low",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -142,7 +142,7 @@
         "Version": 5
       },
       {
-        "ColumnName": "bb_upper",
+        "ColumnName": "DJ_close",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -150,7 +150,511 @@
         "Version": 5
       },
       {
-        "ColumnName": "bb_lower",
+        "ColumnName": "DJ_Ajclose",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "DJ_volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_high",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_close",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_Ajclose",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EG_volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EU_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EU_open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EU_high",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EU_low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "EU_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_Volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OF_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OS_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OS_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OS_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OS_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "OS_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_Volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "SF_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USB_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USB_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USB_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USB_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USB_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLT_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLT_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLT_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLT_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLT_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLD_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLD_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLD_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLD_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "PLD_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "RHO_PRICE",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_Price",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_Volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USDI_Trend",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": true,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_Close",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_Adj Close",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "GDX_Volume",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_Open",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_High",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_Low",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_Close",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_Adj Close",
+        "ColumnPurpose": "Feature",
+        "ColumnDataFormat": "Single",
+        "IsCategorical": false,
+        "Type": "Column",
+        "Version": 5
+      },
+      {
+        "ColumnName": "USO_Volume",
         "ColumnPurpose": "Feature",
         "ColumnDataFormat": "Single",
         "IsCategorical": false,
@@ -171,99 +675,99 @@
         "Version": 1,
         "Type": "Trial",
         "TrainerName": "ForecastBySsa",
-        "Score": 85.452939327649176,
-        "RuntimeInSeconds": 0.018,
+        "Score": 3.53670075743982,
+        "RuntimeInSeconds": 0.758,
         "Parameter": {
           "_SCHEMA_": "e0",
           "e0": {
-            "WindowSize": 3,
-            "SeriesLength": 984,
-            "TrainSize": 1167,
-            "Horizon": 30,
-            "OutputColumnName": "close",
-            "InputColumnName": "close",
-            "ConfidenceLowerBoundColumn": "close_LB",
-            "ConfidenceUpperBoundColumn": "close_UB"
-          }
-        }
-      },
-      {
-        "Version": 1,
-        "Type": "Trial",
-        "TrainerName": "ForecastBySsa",
-        "Score": 85.452939327649176,
-        "RuntimeInSeconds": 0.02,
-        "Parameter": {
-          "_SCHEMA_": "e0",
-          "e0": {
-            "WindowSize": 3,
-            "SeriesLength": 26,
-            "TrainSize": 1167,
-            "Horizon": 30,
-            "OutputColumnName": "close",
-            "InputColumnName": "close",
-            "ConfidenceLowerBoundColumn": "close_LB",
-            "ConfidenceUpperBoundColumn": "close_UB"
-          }
-        }
-      },
-      {
-        "Version": 1,
-        "Type": "Trial",
-        "TrainerName": "ForecastBySsa",
-        "Score": 85.452939327649176,
-        "RuntimeInSeconds": 0.017,
-        "Parameter": {
-          "_SCHEMA_": "e0",
-          "e0": {
-            "WindowSize": 3,
-            "SeriesLength": 33,
-            "TrainSize": 1167,
-            "Horizon": 30,
-            "OutputColumnName": "close",
-            "InputColumnName": "close",
-            "ConfidenceLowerBoundColumn": "close_LB",
-            "ConfidenceUpperBoundColumn": "close_UB"
-          }
-        }
-      },
-      {
-        "Version": 1,
-        "Type": "Trial",
-        "TrainerName": "ForecastBySsa",
-        "Score": 85.452939327649176,
-        "RuntimeInSeconds": 0.017,
-        "Parameter": {
-          "_SCHEMA_": "e0",
-          "e0": {
-            "WindowSize": 3,
-            "SeriesLength": 7,
-            "TrainSize": 1167,
-            "Horizon": 30,
-            "OutputColumnName": "close",
-            "InputColumnName": "close",
-            "ConfidenceLowerBoundColumn": "close_LB",
-            "ConfidenceUpperBoundColumn": "close_UB"
-          }
-        }
-      },
-      {
-        "Version": 1,
-        "Type": "Trial",
-        "TrainerName": "ForecastBySsa",
-        "Score": 85.452939327649176,
-        "RuntimeInSeconds": 0.014,
-        "Parameter": {
-          "_SCHEMA_": "e0",
-          "e0": {
-            "WindowSize": 3,
+            "WindowSize": 2,
             "SeriesLength": 10,
-            "TrainSize": 1167,
+            "TrainSize": 1718,
             "Horizon": 30,
-            "OutputColumnName": "close",
-            "InputColumnName": "close",
-            "ConfidenceLowerBoundColumn": "close_LB",
-            "ConfidenceUpperBoundColumn": "close_UB"
+            "OutputColumnName": "Close",
+            "InputColumnName": "Close",
+            "ConfidenceLowerBoundColumn": "Close_LB",
+            "ConfidenceUpperBoundColumn": "Close_UB"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "ForecastBySsa",
+        "Score": 3.53670075743982,
+        "RuntimeInSeconds": 0.026,
+        "Parameter": {
+          "_SCHEMA_": "e0",
+          "e0": {
+            "WindowSize": 2,
+            "SeriesLength": 2663,
+            "TrainSize": 1718,
+            "Horizon": 30,
+            "OutputColumnName": "Close",
+            "InputColumnName": "Close",
+            "ConfidenceLowerBoundColumn": "Close_LB",
+            "ConfidenceUpperBoundColumn": "Close_UB"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "ForecastBySsa",
+        "Score": 3.53670075743982,
+        "RuntimeInSeconds": 0.034,
+        "Parameter": {
+          "_SCHEMA_": "e0",
+          "e0": {
+            "WindowSize": 2,
+            "SeriesLength": 384,
+            "TrainSize": 1718,
+            "Horizon": 30,
+            "OutputColumnName": "Close",
+            "InputColumnName": "Close",
+            "ConfidenceLowerBoundColumn": "Close_LB",
+            "ConfidenceUpperBoundColumn": "Close_UB"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "ForecastBySsa",
+        "Score": 3.53670075743982,
+        "RuntimeInSeconds": 0.028,
+        "Parameter": {
+          "_SCHEMA_": "e0",
+          "e0": {
+            "WindowSize": 2,
+            "SeriesLength": 300,
+            "TrainSize": 1718,
+            "Horizon": 30,
+            "OutputColumnName": "Close",
+            "InputColumnName": "Close",
+            "ConfidenceLowerBoundColumn": "Close_LB",
+            "ConfidenceUpperBoundColumn": "Close_UB"
+          }
+        }
+      },
+      {
+        "Version": 1,
+        "Type": "Trial",
+        "TrainerName": "ForecastBySsa",
+        "Score": 3.53670075743982,
+        "RuntimeInSeconds": 0.033,
+        "Parameter": {
+          "_SCHEMA_": "e0",
+          "e0": {
+            "WindowSize": 2,
+            "SeriesLength": 248,
+            "TrainSize": 1718,
+            "Horizon": 30,
+            "OutputColumnName": "Close",
+            "InputColumnName": "Close",
+            "ConfidenceLowerBoundColumn": "Close_LB",
+            "ConfidenceUpperBoundColumn": "Close_UB"
           }
         }
       }
@@ -273,7 +777,7 @@
     },
     "Schema": "e0",
     "MetricName": "RMSE",
-    "ModelFilePath": "D:\\Coding Space\\Project\\Group3\\BitCoin_Price_Forecasting\\GoldForecastingModel.mlnet"
+    "ModelFilePath": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\GoldForecastingModel.mlnet"
   },
   "Type": "TrainingConfig",
   "Version": 5,
@@ -282,11 +786,11 @@
     "OptimizeMetric": "RMSE",
     "Subsampling": false,
     "Type": "ForecastingTrainingOption",
-    "TrainingTime": 10,
+    "TrainingTime": 60,
     "UseCrossValidation": false,
     "Horizon": 30,
-    "TimeColumn": "date",
-    "LabelColumn": "close",
+    "TimeColumn": "Date",
+    "LabelColumn": "Close",
     "UseDefaultIndex": false,
     "ValidationOption": {
       "Version": 0,

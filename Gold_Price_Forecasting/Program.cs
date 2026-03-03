@@ -1,4 +1,6 @@
-﻿namespace BitCoin_Price_Forecasting
+﻿using Gold_Price_Forecasting;
+
+namespace BitCoin_Price_Forecasting
 {
     internal class Program
     {
@@ -11,7 +13,7 @@
             int horizion = int.Parse(Console.ReadLine() ?? "5");
 
           
-            var modelOutput = BitcoinForecastingModel.Predict(horizon: horizion);
+            var modelOutput = GoldForecastingModel.Predict(horizon: horizion);
 
             for(int i = 0; i < modelOutput.Close.Length; i++)
             {

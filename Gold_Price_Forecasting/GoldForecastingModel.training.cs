@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ML;
 
-namespace BitCoin_Price_Forecasting
+namespace Gold_Price_Forecasting
 {
-    public partial class BitcoinForecastingModel
+    public partial class GoldForecastingModel
     {
-        public const string RetrainFilePath =  @"D:\Coding Space\Project\Group3\gold_price_forecasting_dataset.csv";
+        public const string RetrainFilePath =  @"D:\Coding Space\Project\Group3\FINAL_USO.csv";
         public const char RetrainSeparatorChar = ',';
         public const bool RetrainHasHeader =  true;
         public const bool RetrainAllowQuoting =  false;
@@ -87,7 +87,7 @@ namespace BitCoin_Price_Forecasting
         public static IEstimator<ITransformer> BuildPipeline(MLContext mlContext)
         {
             // Data process configuration with pipeline data transformations
-            var pipeline = mlContext.Forecasting.ForecastBySsa(windowSize:3,seriesLength:984,trainSize:1167,horizon:30,outputColumnName:@"close",inputColumnName:@"close",confidenceLowerBoundColumn:@"close_LB",confidenceUpperBoundColumn:@"close_UB");
+            var pipeline = mlContext.Forecasting.ForecastBySsa(windowSize:2,seriesLength:10,trainSize:1718,horizon:30,outputColumnName:@"Close",inputColumnName:@"Close",confidenceLowerBoundColumn:@"Close_LB",confidenceUpperBoundColumn:@"Close_UB");
 
             return pipeline;
         }
