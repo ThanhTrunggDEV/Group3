@@ -8,18 +8,18 @@ using System.IO;
 using System.Collections.Generic;
 using Microsoft.ML.Transforms.TimeSeries;
 
-namespace BitCoin_Price_Forecasting
+namespace Gold_Price_Forecasting
 {
-    public partial class BitcoinForecastingModel
+    public partial class GoldForecastingModel
     {
         /// <summary>
-        /// model input class for BitcoinForecastingModel.
+        /// model input class for GoldForecastingModel.
         /// </summary>
         #region model input class
         public class ModelInput
         {
-            [LoadColumn(2)]
-            [ColumnName(@"close")]
+            [LoadColumn(4)]
+            [ColumnName(@"Close")]
             public float Close { get; set; }
 
         }
@@ -27,25 +27,25 @@ namespace BitCoin_Price_Forecasting
         #endregion
 
         /// <summary>
-        /// model output class for BitcoinForecastingModel.
+        /// model output class for GoldForecastingModel.
         /// </summary>
         #region model output class
         public class ModelOutput
         {
-            [ColumnName(@"close")]
+            [ColumnName(@"Close")]
             public float[] Close { get; set; }
 
-            [ColumnName(@"close_LB")]
+            [ColumnName(@"Close_LB")]
             public float[] Close_LB { get; set; }
 
-            [ColumnName(@"close_UB")]
+            [ColumnName(@"Close_UB")]
             public float[] Close_UB { get; set; }
 
         }
 
         #endregion
 
-        private static string MLNetModelPath = Path.Combine(AppContext.BaseDirectory, "GoldForecastingModel.mlnet");
+        private static string MLNetModelPath = Path.GetFullPath(@"D:\Coding Space\Project\Group3\Gold_Price_Forecasting\GoldForecastingModel.mlnet");
 
         public static readonly Lazy<TimeSeriesPredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<TimeSeriesPredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
 
