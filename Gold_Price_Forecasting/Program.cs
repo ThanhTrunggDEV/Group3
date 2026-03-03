@@ -4,18 +4,21 @@
     {
         static void Main(string[] args)
         {
-            var modelOutput = BitcoinForecastingModel.Predict();
+            
 
             Console.Write("Nhap so gio de du doan: ");
 
             int horizion = int.Parse(Console.ReadLine() ?? "5");
 
-            // predict next 5 periods
-            modelOutput = BitcoinForecastingModel.Predict(horizon: horizion);
-            Console.WriteLine(string.Join("\n", modelOutput.Close));
+          
+            var modelOutput = BitcoinForecastingModel.Predict(horizon: horizion);
 
-            Console.WriteLine("This is group 3");
-            Console.WriteLine("Hello, World!");
+            for(int i = 0; i < modelOutput.Close.Length; i++)
+            {
+                Console.WriteLine($"Predicted Close Price[{i}]: {modelOutput.Close[i]}$ || LB: {modelOutput.Close_LB[i]}$ || UB: {modelOutput.Close_UB[i]}$");
+            }
+
+
         }
     }
 }
