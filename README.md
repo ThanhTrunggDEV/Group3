@@ -1,3 +1,7 @@
-# Chua co gi ca :v
-# Hưởng Ngu
-# Con chó nào dám chửi t đấy
+**We're group 3**
+
+##Our members:
+- Nguyen Thanh Trung
+- Do Van Nguyen
+- Nguyen Xuan Huong
+- Nguyen Quoc Dat
