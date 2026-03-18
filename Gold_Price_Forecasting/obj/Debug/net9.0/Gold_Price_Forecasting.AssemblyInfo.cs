@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Gold_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22d7b0cdae9bcc0274a64eb39b745ada667b7c70")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+433d34288e339e1206892f7658be3abab728b6fe")]
 [assembly: System.Reflection.AssemblyProductAttribute("Gold_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Gold_Price_Forecasting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
