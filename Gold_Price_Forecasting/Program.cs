@@ -9,7 +9,7 @@ namespace Gold_Price_Forecasting
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             Console.WriteLine("╔══════════════════════════════════════════════════╗");
-            Console.WriteLine("║         DỰ ĐOÁN GIÁ VÀNG (USO) - ML.NET        ║");
+            Console.WriteLine("║         DỰ ĐOÁN GIÁ VÀNG (USO) - ML.NET          ║");
             Console.WriteLine("╚══════════════════════════════════════════════════╝");
             Console.WriteLine();
 
@@ -104,7 +104,7 @@ namespace Gold_Price_Forecasting
 
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("📊 Tổng kết:");
+            Console.WriteLine("Tổng kết:");
             Console.ResetColor();
             Console.WriteLine($"   Giá trung bình dự đoán : {avgPrice:F2}$");
             Console.WriteLine($"   Giá thấp nhất dự đoán  : {minPrice:F2}$");
