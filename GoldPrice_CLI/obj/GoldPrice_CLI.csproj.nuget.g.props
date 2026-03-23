@@ -13,4 +13,9 @@
     <SourceRoot Include="C:\Users\Admin\.nuget\packages\" />
     <SourceRoot Include="C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages\" />
   </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.ml\5.0.0\build\netstandard2.0\Microsoft.ML.props" Condition="Exists('$(NuGetPackageRoot)microsoft.ml\5.0.0\build\netstandard2.0\Microsoft.ML.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.ml.fasttree\5.0.0\build\netstandard2.0\Microsoft.ML.FastTree.props" Condition="Exists('$(NuGetPackageRoot)microsoft.ml.fasttree\5.0.0\build\netstandard2.0\Microsoft.ML.FastTree.props')" />
+    <Import Project="$(NuGetPackageRoot)lightgbm\4.6.0\build\LightGBM.props" Condition="Exists('$(NuGetPackageRoot)lightgbm\4.6.0\build\LightGBM.props')" />
+  </ImportGroup>
 </Project>
