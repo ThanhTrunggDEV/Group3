@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11527.330 d18.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoldPrice_CLI", "GoldPrice_CLI.csproj", "{CBFAE699-C876-7754-D971-D093E4DF380A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBFAE699-C876-7754-D971-D093E4DF380A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBFAE699-C876-7754-D971-D093E4DF380A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBFAE699-C876-7754-D971-D093E4DF380A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBFAE699-C876-7754-D971-D093E4DF380A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {730FF140-6BFA-4AAD-AE65-FEA85608A0A8}
+	EndGlobalSection
+EndGlobal

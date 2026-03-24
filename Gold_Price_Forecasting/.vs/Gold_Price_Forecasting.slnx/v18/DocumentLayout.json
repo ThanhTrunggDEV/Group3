@@ -1,0 +1,76 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|d:\\coding space\\project\\group3\\gold_price_forecasting\\goldforecastingmodel.mbconfig||{93FA4DC3-61EC-47AF-B0BA-50CAD3CAF049}",
+      "RelativeMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|solutionrelative:goldforecastingmodel.mbconfig||{93FA4DC3-61EC-47AF-B0BA-50CAD3CAF049}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|d:\\coding space\\project\\group3\\gold_price_forecasting\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|d:\\coding space\\project\\group3\\gold_price_forecasting\\goldforecastingmodel.training.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4046CA2C-8061-AACC-888F-916A68732A54}|Gold_Price_Forecasting.csproj|solutionrelative:goldforecastingmodel.training.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 294,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GoldForecastingModel.training.cs",
+              "DocumentMoniker": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\GoldForecastingModel.training.cs",
+              "RelativeDocumentMoniker": "GoldForecastingModel.training.cs",
+              "ToolTip": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\GoldForecastingModel.training.cs",
+              "RelativeToolTip": "GoldForecastingModel.training.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAgwFMAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-03T16:00:25.86Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GoldForecastingModel.mbconfig",
+              "DocumentMoniker": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\GoldForecastingModel.mbconfig",
+              "RelativeDocumentMoniker": "GoldForecastingModel.mbconfig",
+              "ToolTip": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\GoldForecastingModel.mbconfig*",
+              "RelativeToolTip": "GoldForecastingModel.mbconfig*",
+              "Icon": "7f5c38b0-f0bc-4551-a9a8-b4f467cc4670.000012|",
+              "WhenOpened": "2026-03-03T12:20:32.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Coding Space\\Project\\Group3\\Gold_Price_Forecasting\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAADwvw4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-03T11:30:28.599Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
