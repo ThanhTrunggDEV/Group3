@@ -66,12 +66,14 @@ namespace GoldPrice_CLI
 
         private static ITransformer TrainModel(MLContext mlContext, IDataView trainData)
         {
+            int iterations = 10000;
+            double learningRate = 0.005;
             var pipeline = mlContext.Transforms.Concatenate("Features", 
                     nameof(ModelInput.Open), 
                     nameof(ModelInput.High), 
                     nameof(ModelInput.Low), 
                     nameof(ModelInput.Volume))
-                .Append(mlContext.Regression.Trainers.LightGbm(labelColumnName: "Label", featureColumnName: "Features"));
+                .Append(mlContext.Regression.Trainers.LightGbm(labelColumnName: "Label", featureColumnName: "Features", learningRate: learningRate, numberOfIterations: iterations));
 
             return pipeline.Fit(trainData);
         }
