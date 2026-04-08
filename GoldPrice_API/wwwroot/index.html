@@ -459,15 +459,15 @@
 
             try {
                 // Fetch with minimum delay for premium feel
-                const response = await fetch('/predict', {
+                const response = await fetch('/api/v1/predictions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(reqData)
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    animateValue(resVal, 0, data.predictedClose, 1500);
+                    const responseJson = await response.json();
+                    animateValue(resVal, 0, responseJson.data.predictedClose, 1500);
                 } else if (response.status === 429) {
                     showToast("Defensive Measure: Rate Limit Exceeded.");
                 } else {
