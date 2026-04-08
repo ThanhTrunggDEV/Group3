@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Price Forecaster | Premium ML predictions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(245, 158, 11, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1), transparent 25%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+
+        /* Number input arrows hiding */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .btn-predict {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+
+        .btn-predict:active {
+            transform: translateY(1px);
+        }
+
+        .btn-predict::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-predict:hover::after {
+            left: 100%;
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+            display: none;
+        }
+
+        .result-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-panel">
+            <header>
+                <h1>Gold Price ML</h1>
+                <p class="subtitle">AI-driven predictive forecasting model</p>
+            </header>
+
+            <form id="predictForm">
+                <div class="input-group">
+                    <label for="open">Open Price (USD)</label>
+                    <input type="number" id="open" step="any" placeholder="e.g. 150.50" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="high">High Price (USD)</label>
+                    <input type="number" id="high" step="any" placeholder="e.g. 152.00" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="low">Low Price (USD)</label>
+                    <input type="number" id="low" step="any" placeholder="e.g. 149.80" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="volume">Volume</label>
+                    <input type="number" id="volume" step="any" placeholder="e.g. 8500000" required>
+                </div>
+
+                <button type="button" class="btn-predict" id="btnPredict">
+                    <span id="btnText">Run Prediction</span>
+                    <div class="loader" id="btnLoader"></div>
+                </button>
+            </form>
+
+            <div class="result-container" id="resultContainer">
+                <div class="result-label">Predicted Close Price</div>
+                <div class="result-value" id="resultValue">$0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('btnPredict').addEventListener('click', async () => {
+            const openVal = document.getElementById('open').value;
+            const highVal = document.getElementById('high').value;
+            const lowVal = document.getElementById('low').value;
+            const volVal = document.getElementById('volume').value;
+
+            if(!openVal || !highVal || !lowVal || !volVal) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultValue = document.getElementById('resultValue');
+
+            // Show loading
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            resultContainer.classList.remove('show');
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        open: parseFloat(openVal),
+                        high: parseFloat(highVal),
+                        low: parseFloat(lowVal),
+                        volume: parseFloat(volVal)
+                    })
+                });
+
+                if(response.ok) {
+                    const data = await response.json();
+                    
+                    // Format as currency
+                    const formatter = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                    });
+
+                    resultValue.textContent = formatter.format(data.predictedClose);
+                    
+                    // Simulate a small delay for dramatic UX effect
+                    setTimeout(() => {
+                        resultContainer.classList.add('show');
+                    }, 300);
+                } else {
+                    alert('Error making prediction.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error or API is down.');
+            } finally {
+                // Restore button state
+                btnLoader.style.display = 'none';
+                btnText.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

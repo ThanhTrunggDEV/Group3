@@ -66,7 +66,7 @@ namespace GoldPrice_CLI
 
         private static ITransformer TrainModel(MLContext mlContext, IDataView trainData)
         {
-            int iterations = 10000;
+            int iterations = 1000;
             double learningRate = 0.005;
             var pipeline = mlContext.Transforms.Concatenate("Features", 
                     nameof(ModelInput.Open), 
