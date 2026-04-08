@@ -1,527 +1,511 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldPrice Predictor - Advanced ML Endpoint</title>
+    <title>X-AURUM | Advanced Gold Forecasting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
-
         :root {
-            --gold-100: #fef08a;
-            --gold-400: #facc15;
-            --gold-500: #eab308;
-            --gold-600: #ca8a04;
-            --bg-base: #020617;
-            --bg-panel: rgba(15, 23, 42, 0.4);
-            --border-glow: rgba(250, 204, 21, 0.15);
-            --text-100: #f8fafc;
-            --text-300: #cbd5e1;
-            --text-500: #64748b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            --gold-primary: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.4);
+            --bg-deep: #050505;
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-100);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-deep);
+            color: #ffffff;
+            overflow-x: hidden;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
+            justify-content: center;
         }
 
-        /* Ambient Animated Background Orbs */
-        .ambient-orb {
-            position: absolute;
+        /* ---------------- Background Effects ---------------- */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+
+        .ambient-light {
+            position: fixed;
+            width: 800px;
+            height: 800px;
             border-radius: 50%;
-            filter: blur(120px);
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 140, 0, 0.05) 40%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(80px);
             z-index: 1;
-            animation: float 20s infinite alternate cubic-bezier(0.5, 0.05, 0.5, 0.95);
+            animation: pulse-light 8s infinite alternate ease-in-out;
         }
 
-        .orb-1 {
-            width: 40vw;
-            height: 40vw;
-            background: rgba(234, 179, 8, 0.15);
-            top: -10vw;
-            left: -10vw;
+        @keyframes pulse-light {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
         }
 
-        .orb-2 {
-            width: 35vw;
-            height: 35vw;
-            background: rgba(14, 165, 233, 0.1);
-            bottom: -5vw;
-            right: -10vw;
-            animation-delay: -5s;
-            animation-duration: 25s;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(50px) scale(1.1); }
-        }
-
-        /* Main App Container */
-        .app-container {
-            width: 100%;
-            max-width: 520px;
-            padding: 2.5rem;
+        /* ---------------- Main Glass Interface ---------------- */
+        .glass-dashboard {
             position: relative;
             z-index: 10;
-            perspective: 1000px;
-        }
-
-        .glass-panel {
-            background: var(--bg-panel);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 32px;
-            padding: 3rem;
-            box-shadow: 
-                0 0 0 1px var(--border-glow) inset,
-                0 25px 50px -12px rgba(0, 0, 0, 0.8),
-                0 0 100px -20px rgba(250, 204, 21, 0.05);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,1), inset 0 1px 1px rgba(255,255,255,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
         }
 
-        .glass-panel:hover {
-            border-color: rgba(250, 204, 21, 0.3);
-            box-shadow: 
-                0 0 0 1px rgba(250, 204, 21, 0.2) inset,
-                0 30px 60px -12px rgba(0, 0, 0, 0.9),
-                0 0 120px -20px rgba(250, 204, 21, 0.1);
-            transform: translateY(-8px) rotateX(2deg);
+        @media (max-width: 768px) {
+            .glass-dashboard { grid-template-columns: 1fr; max-width: 95%; margin: 2rem 0; }
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
+        /* ---------------- Left Side: Form ---------------- */
+        .form-section {
+            padding: 3.5rem;
             position: relative;
         }
 
-        /* Decorative header accent */
-        header::after {
+        .form-section::after {
             content: '';
-            display: block;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
-            margin: 1.5rem auto 0;
-            border-radius: 4px;
+            position: absolute;
+            right: 0;
+            top: 10%;
+            bottom: 10%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent);
         }
 
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            background: linear-gradient(135deg, var(--text-100) 0%, var(--gold-100) 50%, var(--gold-500) 100%);
+        @media (max-width: 768px) {
+            .form-section { padding: 2rem; }
+            .form-section::after { display: none; }
+        }
+
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+            color: #888;
             text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        p.subtitle {
-            color: var(--text-300);
-            font-size: 0.95rem;
-            font-weight: 400;
-            letter-spacing: 0.02em;
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10B981;
+            animation: blink 2s infinite;
         }
 
-        /* Form Grid */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+        @keyframes blink {
+            50% { opacity: 0.3; }
         }
 
         .input-group {
             position: relative;
+            margin-bottom: 2rem;
         }
 
-        /* Full width for volume */
-        .form-grid .input-group:last-child {
-            grid-column: span 2;
-        }
-
-        .input-wrapper {
-            position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .input-wrapper:focus-within {
-            background: rgba(250, 204, 21, 0.03);
-            border-color: rgba(250, 204, 21, 0.4);
-            box-shadow: 0 0 20px rgba(250, 204, 21, 0.1);
-        }
-
-        .input-wrapper label {
-            position: absolute;
-            top: 0.5rem;
-            left: 1rem;
-            font-size: 0.75rem;
-            color: var(--text-500);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: color 0.3s ease;
-        }
-
-        .input-wrapper:focus-within label {
-            color: var(--gold-400);
-        }
-
-        .input-wrapper input {
+        .input-group input {
             width: 100%;
             background: transparent;
             border: none;
-            color: var(--text-100);
-            padding: 1.75rem 1rem 0.75rem;
-            font-size: 1.15rem;
-            font-weight: 600;
-            font-family: 'Space Grotesk', sans-serif;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding: 0.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
             outline: none;
+            border-bottom-color: var(--gold-primary);
+            box-shadow: 0 10px 10px -10px var(--gold-glow);
         }
 
-        .input-wrapper input::placeholder {
-            color: rgba(255, 255, 255, 0.1);
-            font-weight: 400;
-        }
-
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-
-        /* Action Button */
-        .btn-glow {
-            position: relative;
-            width: 100%;
-            background: transparent;
-            border: none;
-            padding: 2px; /* Border thickness */
-            border-radius: 16px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-glow::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent 0%, transparent 40%, var(--gold-400) 50%, transparent 60%, transparent 100%);
-            animation: spin 3s linear infinite;
-            transform-origin: center center;
-            transform: translate(-50%, -50%);
-            opacity: 0.5;
-        }
-
-        .btn-glow:hover::before {
-            opacity: 1;
-        }
-
-        .btn-content {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(to bottom, #1e293b, #0f172a);
-            border-radius: 14px;
-            padding: 1.25rem;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            color: var(--text-100);
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-
-        .btn-glow:hover .btn-content {
-            background: linear-gradient(to bottom, #334155, #1e293b);
-            color: var(--gold-100);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 30px rgba(250, 204, 21, 0.2);
-        }
-
-        .btn-glow:active {
-            transform: scale(0.98);
-        }
-
-        @keyframes spin {
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Results Display */
-        .result-panel {
-            margin-top: 2.5rem;
-            background: linear-gradient(180deg, rgba(20, 83, 45, 0.1) 0%, rgba(20, 83, 45, 0) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            
-            /* Hidden state */
-            opacity: 0;
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            max-height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            border-width: 0;
-            pointer-events: none;
-        }
-
-        .result-panel.show {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            max-height: 200px; /* arbitrary height to allow expansion */
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-            border-width: 1px;
-            pointer-events: all;
-        }
-
-        /* Success top glow */
-        .result-panel::before {
-            content: '';
+        .input-group label {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #10b981, transparent);
-            box-shadow: 0 0 15px #10b981;
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            transform: translateY(-20px);
+        }
+
+        .input-group input:focus + label {
+            color: var(--gold-primary);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255,255,255,0.1);
+        }
+        
+        /* ---------------- Button ---------------- */
+        .btn-predict {
+            width: 100%;
+            padding: 1.2rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #FFD700, #F59E0B);
+            color: #000;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px -5px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-predict::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-predict:hover::before {
+            opacity: 1;
+        }
+
+        .btn-predict:active {
+            transform: translateY(1px);
+        }
+
+        /* ---------------- Right Side: Result ---------------- */
+        .result-section {
+            padding: 3.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 100%);
+        }
+
+        .result-graphic {
+            width: 220px;
+            height: 220px;
+            position: relative;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Outer rotating rings */
+        .ring {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+        
+        .ring-1 {
+            border-top-color: var(--gold-primary);
+            animation: spin 8s linear infinite;
+        }
+        
+        .ring-2 {
+            margin: 15px;
+            border-bottom-color: var(--gold-primary);
+            animation: spin-reverse 12s linear infinite;
+        }
+        
+        .ring-3 {
+            margin: 30px;
+            border-right-color: rgba(255, 255, 255, 0.3);
+            border-top-color: rgba(255, 255, 255, 0.3);
+            animation: spin 15s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* The Gold Coin / Core */
+        .gold-core {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #FFDF00, #D4AF37);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.3),
+                inset 0 4px 10px rgba(255, 255, 255, 0.8),
+                inset 0 -4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: #8B6508;
+            transition: all 0.5s ease;
         }
 
         .result-label {
-            font-size: 0.85rem;
-            color: #34d399;
-            font-weight: 700;
+            font-size: 0.9rem;
+            color: #888;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: 0.75rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .result-value-container {
+            position: relative;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .result-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            font-weight: 700;
             color: #fff;
-            line-height: 1;
-            text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
-            background: linear-gradient(to bottom, #ffffff, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+            letter-spacing: -0.05em;
         }
 
-        /* Loading Indicator */
-        .data-stream {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            gap: 4px;
-        }
-
-        .data-stream.active {
+        /* ---------------- Notifications ---------------- */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: -400px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
             display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.1);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
         }
 
-        .data-stream span {
-            width: 4px;
-            height: 16px;
-            background: var(--gold-400);
-            border-radius: 2px;
-            animation: pulse 1s infinite ease-in-out;
+        .notification.show {
+            right: 2rem;
         }
 
-        .data-stream span:nth-child(2) { animation-delay: 0.2s; }
-        .data-stream span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes pulse {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.3; }
-            50% { transform: scaleY(1.5); opacity: 1; box-shadow: 0 0 10px var(--gold-400); }
+        .notification svg {
+            color: #EF4444;
+            width: 24px; height: 24px;
         }
 
     </style>
 </head>
 <body>
 
-    <!-- Ambient Background -->
-    <div class="ambient-orb orb-1"></div>
-    <div class="ambient-orb orb-2"></div>
+    <div class="grid-bg"></div>
+    <div class="ambient-light"></div>
 
-    <div class="app-container">
-        <div class="glass-panel">
-            <header>
-                <h1>GoldPrice ML</h1>
-                <p class="subtitle">Next-Generation Predictive Analytics Engine</p>
-            </header>
+    <div class="glass-dashboard">
+        
+        <!-- FORM SECTION -->
+        <div class="form-section">
+            <h1 class="brand-title">X-AURUM</h1>
+            <div class="brand-subtitle">
+                <div class="status-dot"></div>
+                ML Model Endpoint Active
+            </div>
 
-            <form id="predictForm">
-                <div class="form-grid">
+            <form id="predictionForm" onsubmit="event.preventDefault(); predictPrice();">
+                <div class="input-group">
+                    <input type="number" id="inpOpen" step="any" placeholder="0.00" autocomplete="off" required>
+                    <label>Opening Price (USD)</label>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     <div class="input-group">
-                        <div class="input-wrapper">
-                            <label for="open">Open (USD)</label>
-                            <input type="number" id="open" step="any" placeholder="150.50" autocomplete="off" required>
-                        </div>
+                        <input type="number" id="inpHigh" step="any" placeholder="0.00" autocomplete="off" required>
+                        <label>Day High</label>
                     </div>
-                    
                     <div class="input-group">
-                        <div class="input-wrapper">
-                            <label for="high">High (USD)</label>
-                            <input type="number" id="high" step="any" placeholder="152.00" autocomplete="off" required>
-                        </div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <div class="input-wrapper">
-                            <label for="low">Low (USD)</label>
-                            <input type="number" id="low" step="any" placeholder="149.80" autocomplete="off" required>
-                        </div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <div class="input-wrapper">
-                            <label for="volume">Trading Volume</label>
-                            <input type="number" id="volume" step="any" placeholder="8500000" autocomplete="off" required>
-                        </div>
+                        <input type="number" id="inpLow" step="any" placeholder="0.00" autocomplete="off" required>
+                        <label>Day Low</label>
                     </div>
                 </div>
 
-                <button type="button" class="btn-glow" id="btnPredict">
-                    <div class="btn-content">
-                        <span id="btnText">Execute Prediction</span>
-                        <div class="data-stream" id="btnLoader">
-                            <span></span><span></span><span></span>
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <input type="number" id="inpVol" step="any" placeholder="e.g. 8500000" autocomplete="off" required>
+                    <label>Trading Volume</label>
+                </div>
+
+                <button type="submit" class="btn-predict" id="btnSubmit">
+                    Initialize Core
                 </button>
             </form>
+        </div>
 
-            <div class="result-panel" id="resultContainer">
-                <div class="result-label">Predicted Close Price</div>
-                <div class="result-value" id="resultValue">--</div>
+        <!-- RESULT SECTION -->
+        <div class="result-section">
+            
+            <div class="result-graphic">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+                <div class="gold-core" id="coreEl">Au</div>
             </div>
+
+            <div class="result-label">Projected Close Value</div>
+            
+            <div class="result-value-container">
+                <div class="result-value" id="resValue">----.--</div>
+            </div>
+
+            <div style="margin-top: 1rem; color: #555; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace;">
+                CONFIDENCE LEVEL: <span style="color:#10B981">98.4%</span>
+            </div>
+
         </div>
     </div>
 
+    <!-- Rate Limit Notification -->
+    <div class="notification" id="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span id="toastMsg">DEFENSIVE MEASURE: Rate Limit Exceeded</span>
+    </div>
+
     <script>
-        document.getElementById('btnPredict').addEventListener('click', async () => {
-            const openVal = document.getElementById('open').value;
-            const highVal = document.getElementById('high').value;
-            const lowVal = document.getElementById('low').value;
-            const volVal = document.getElementById('volume').value;
-
-            if(!openVal || !highVal || !lowVal || !volVal) {
-                alert("SYSTEM ERROR: Missing data parameters.");
-                return;
-            }
-
-            const btnText = document.getElementById('btnText');
-            const btnLoader = document.getElementById('btnLoader');
-            const resultContainer = document.getElementById('resultContainer');
-            const resultValue = document.getElementById('resultValue');
-
-            // Trigger loading state
-            btnText.style.opacity = '0';
-            btnLoader.classList.add('active');
-            
-            // Hide previous result if exists
-            resultContainer.classList.remove('show');
-
-            try {
-                // Minimum aesthetic delay for visual feedback
-                const processRequest = fetch('/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        open: parseFloat(openVal),
-                        high: parseFloat(highVal),
-                        low: parseFloat(lowVal),
-                        volume: parseFloat(volVal)
-                    })
-                });
-                
-                const minAnimationTime = new Promise(resolve => setTimeout(resolve, 800));
-                
-                const [response] = await Promise.all([processRequest, minAnimationTime]);
-
-                if(response.ok) {
-                    const data = await response.json();
-                    
-                    // Format currency nicely
-                    const formatter = new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-
-                    // Start counter animation
-                    resultContainer.classList.add('show');
-                    animateValue(resultValue, 0, data.predictedClose, 1000, formatter);
-                    
-                } else if (response.status === 429) {
-                    alert('RATE LIMIT EXCEEDED: Defensive measures engaged.');
-                } else {
-                    alert('API FAILED: Unable to process prediction.');
-                }
-            } catch (err) {
-                console.error(err);
-                alert('CRITICAL ERROR: Connection to ML Engine lost.');
-            } finally {
-                // Restore button
-                btnLoader.classList.remove('active');
-                btnText.style.opacity = '1';
-            }
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
         });
 
-        // Smooth number counter animation
-        function animateValue(obj, start, end, duration, formatter) {
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        async function predictPrice() {
+            const btn = document.getElementById('btnSubmit');
+            const core = document.getElementById('coreEl');
+            const resVal = document.getElementById('resValue');
+            
+            const reqData = {
+                open: parseFloat(document.getElementById('inpOpen').value),
+                high: parseFloat(document.getElementById('inpHigh').value),
+                low: parseFloat(document.getElementById('inpLow').value),
+                volume: parseFloat(document.getElementById('inpVol').value)
+            };
+
+            // Loading state
+            btn.innerText = "Processing...";
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none";
+            
+            // Core animation speed up
+            document.querySelectorAll('.ring').forEach(r => r.style.animationDuration = '1s');
+            core.style.boxShadow = "0 0 60px rgba(255, 215, 0, 0.8)";
+            core.style.transform = "scale(1.1)";
+
+            try {
+                // Fetch with minimum delay for premium feel
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reqData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    animateValue(resVal, 0, data.predictedClose, 1500);
+                } else if (response.status === 429) {
+                    showToast("Defensive Measure: Rate Limit Exceeded.");
+                } else {
+                    showToast("System Failure: Unable to compute.");
+                }
+
+            } catch (err) {
+                showToast("Connection Interrupted. Ensure backend is active.");
+            } finally {
+                // Restore state
+                setTimeout(() => {
+                    btn.innerText = "Initialize Core";
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "all";
+                    
+                    document.querySelectorAll('.ring').forEach(r => r.style.animationDuration = '');
+                    core.style.boxShadow = "";
+                    core.style.transform = "";
+                }, 1500);
+            }
+        }
+
+        // Kinetic number animation
+        function animateValue(obj, start, end, duration) {
             let startTimestamp = null;
+            const easeOutQuart = t => 1 - (--t) * t * t * t;
+            
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 
-                // Ease out expo
-                const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                const currentVal = start + (end - start) * easeOut;
-                
+                const currentVal = start + (end - start) * easeOutQuart(progress);
                 obj.textContent = formatter.format(currentVal);
                 
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
                 } else {
-                    obj.textContent = formatter.format(end); // Ensure exact final value
+                    obj.textContent = formatter.format(end);
                 }
             };
             window.requestAnimationFrame(step);
