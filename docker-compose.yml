@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  goldprice-api:
+    container_name: goldprice_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5235:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+    restart: unless-stopped
