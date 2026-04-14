@@ -10,16 +10,16 @@ color: #f0f0f0
 ## Hệ Thống Dự Báo Giá Vàng Theo Thời Gian Thực
 Triển khai Web API tích hợp Trí tuệ Nhân tạo & Dữ liệu Thị trường Toàn cầu
 
-**Nhóm 3:** Thành Trung · Xuân Hương · Văn Nguyễn · Quốc Đạt
+**Nhóm 3:** Xuân Hương · Quốc Đạt · Văn Nguyễn · Thành Trung
 
-> 🎙️ **Script (Thành Trung):**
-> *"Kính chào thầy cô và các bạn. Nhóm 3 chúng em xin bắt đầu bài báo cáo kết thúc môn với chủ đề: Triển khai Web API tích hợp Mô hình Trí tuệ Nhân tạo và dữ liệu giá Vàng thời gian thực. Hệ thống có tên X-AURUM. Em xin phép đi vào phần đầu tiên."*
+> 🎙️ **Script (Xuân Hương):**
+> *"Kính chào thầy cô và các bạn. Nhóm 3 chúng em xin bắt đầu bài báo cáo kết thúc môn với chủ đề: Triển khai Web API tích hợp Mô hình Trí tuệ Nhân tạo và dữ liệu giá Vàng thời gian thực. Hệ thống có tên X-AURUM. Em là Xuân Hương, em xin phép đi vào phần đầu tiên."*
 
 ---
 
-<!-- SLIDE 1 - Thành Trung -->
+<!-- SLIDE 1 - Xuân Hương -->
 ## Slide 1: Bài Toán & Kiến Trúc Cốt Lõi
-### (Thành Trung)
+### (Xuân Hương)
 
 **Vấn đề đặt ra:**
 - Mô hình AI dự báo giá Vàng (ML.NET) chỉ chạy được trên Console nội bộ → Không thể chia sẻ hoặc tái sử dụng từ bên ngoài.
@@ -34,13 +34,13 @@ GoldPrice_API/
 ```
 
 > 🎙️ **Script:**
-> *"Bài toán nhóm em gặp phải là: Mô hình AI chỉ chạy trên máy cục bộ, không ai ngoài nhóm có thể dùng được. Để giải quyết, nhóm em đã bọc toàn bộ logic bên trong một Web API. Framework được chọn là ASP.NET Core Minimal API trên .NET 10 — đây là kiến trúc Microservices tinh gọn nhất hiện nay, loại bỏ hoàn toàn tầng Controller truyền thống thừa thãi. Toàn bộ code được phân tách sạch sẽ thành 3 nhánh: Endpoints định tuyến, Models khai báo dữ liệu, và Extensions quản lý cấu hình."*
+> *"Bài toán đầu tiên nhóm em gặp phải là: Mô hình AI chỉ chạy trên máy cục bộ, không ai ngoài nhóm có thể dùng được. Để giải quyết, chúng em đã bọc toàn bộ logic này bên trong một Web API. Framework được chọn là ASP.NET Core Minimal API trên .NET 10 — đây là kiến trúc Microservices tinh gọn nhất hiện nay, loại bỏ hoàn toàn tầng Controller truyền thống phức tạp. Toàn bộ code được phân tách sạch sẽ thành 3 nhánh: Endpoints định tuyến, Models khai báo dữ liệu, và Extensions quản lý cấu hình."*
 
 ---
 
-<!-- SLIDE 2 - Thành Trung -->
+<!-- SLIDE 2 - Xuân Hương -->
 ## Slide 2: Thiết Kế Hai Luồng Endpoint
-### (Thành Trung)
+### (Xuân Hương)
 
 | Endpoint | Method | Mô tả |
 |---|---|---|
@@ -53,20 +53,20 @@ GoldPrice_API/
   "success": true,
   "data": {
     "predictedClose": 2355.8,
-    "predictedCloseVnd": 58895000,
+    "predictedCloseVnd": 120000000,
     "liveWorldPrice": 2341.2
   }
 }
 ```
 
 > 🎙️ **Script:**
-> *"Nhóm em thiết kế 2 luồng endpoint độc lập. Luồng thứ nhất là POST — dành cho các hệ thống bên ngoài muốn tự truyền vào các chỉ số Open, High, Low, Volume để nhận dự báo. Luồng thứ hai, và đây là điểm đặc biệt: GET /realtime — hoàn toàn không nhận bất kỳ input nào. Chính Server sẽ tự động đi lấy dữ liệu thị trường về và đưa vào mô hình. Mọi Response đều được chuẩn hóa chung một Wrapper JSON có cờ 'success', đảm bảo bất kỳ Client nào cũng parse được an toàn."*
+> *"Nhóm em thiết kế 2 luồng endpoint độc lập. Luồng thứ nhất là POST — dành cho các hệ thống bên ngoài muốn tự truyền vào các chỉ số Open, High, Low, Volume để nhận dự báo. Luồng thứ hai, và đây là điểm đặc biệt: GET /realtime — hoàn toàn không nhận bất kỳ input nào. Chính Server sẽ tự động đi lấy dữ liệu thị trường về và đưa vào mô hình. Mọi Response đều được chuẩn hóa chung một Wrapper JSON có cờ 'success', đảm bảo hệ thống gọi đến parse dữ liệu dễ dàng và an toàn."*
 
 ---
 
-<!-- SLIDE 3 - Thành Trung -->
+<!-- SLIDE 3 - Xuân Hương -->
 ## Slide 3: Tài Liệu API Tự Động Với Swagger (OpenAPI)
-### (Thành Trung)
+### (Xuân Hương)
 
 **Tại sao cần Swagger?**
 - API đưa ra ngoài mà không có mô tả → Bên thứ 3 không biết cách dùng.
@@ -78,68 +78,67 @@ GoldPrice_API/
 - ✅ Đây cũng là **công cụ Demo chính** của nhóm trong buổi báo cáo hôm nay.
 
 > 🎙️ **Script:**
-> *"Một API chuẩn doanh nghiệp không thể thiếu tài liệu mô tả. Thay vì viết tay file Word hướng dẫn, nhóm em tích hợp Swagger — đây là chuẩn mô tả OpenAPI được cả ngành công nghiệp phần mềm sử dụng. Khi Server khởi động, Swagger tự động đọc code C#, sinh ra một trang web tương tác mô tả toàn bộ endpoints, kiểu dữ liệu vào-ra, và đặc biệt — cho phép người dùng thực thi request ngay trên trang đó mà không cần cài Postman hay bất kỳ công cụ nào. Đây cũng là nơi nhóm em sẽ demo trực tiếp cho thầy cô xem. Em xin nhường phần tiếp theo cho bạn Xuân Hương."*
+> *"Hơn nữa, một API chuẩn doanh nghiệp không thể thiếu tài liệu mô tả. Thay vì viết tay file hướng dẫn, nhóm em tích hợp luôn Swagger — chuẩn mô tả OpenAPI tiên tiến nhất. Khi Server hoạt động, Swagger sẽ tự sinh trang web mô tả toàn bộ endpoints, kiểu dữ liệu vào-ra, và còn cho phép người dùng chạy thử (Execute) ngay trên web mà không cần cài thêm công cụ như Postman. Lát nữa nhóm em cũng sẽ dùng Swagger để demo. Em xin kết thúc phần kiến trúc, tiếp theo mời bạn Quốc Đạt."*
 
 ---
 
-<!-- SLIDE 4 - Xuân Hương -->
-## Slide 4: Vấn Đề API Cô Lập & Giải Pháp Tích Hợp
-### (Xuân Hương)
+<!-- SLIDE 4 - Quốc Đạt -->
+## Slide 4: Tích Hợp API Bên Thứ 3 (Binance & ExchangeRate)
+### (Quốc Đạt)
 
-**Vấn đề:** Endpoint `/realtime` tự chạy — nhưng lấy dữ liệu thị trường ở đâu?
+**Bài thi 3: Sử dụng API từ nguồn bên ngoài (3rd-Party APIs)**
 
-**Giải pháp:** Server đóng vai **"Client"** gọi ra 2 nguồn API bên ngoài:
+**Nguồn 1: Binance Public API**
+- Mục đích: Lấy giá Vàng Spot theo phiên giao dịch.
+- Method & URL: `GET api.binance.com/api/v3/klines`
+- Dữ liệu: Open, High, Low, Volume từ mảng Klines JSON.
 
-| Nguồn API | Mục đích | Dữ liệu lấy về |
-|---|---|---|
-| **Binance API** | Sàn giao dịch toàn cầu | Giá Vàng PAXG (Open, High, Low, Volume) |
-| **Open Exchange Rates API** | Tổ chức tài chính quốc tế | Tỷ giá USD → VND |
+**Nguồn 2: Open Exchange Rates API**
+- Mục đích: Lấy tỷ giá USD → VND hiện tại.
+- Method & URL: `GET open.er-api.com/v6/latest/USD`
+- Dữ liệu: rates.VND
 
 > 🎙️ **Script:**
-> *"Cảm ơn bạn Trung. Kính thưa thầy cô, bạn Trung vừa giới thiệu endpoint GET /realtime có khả năng tự chạy. Vậy câu hỏi đặt ra là: Server lấy dữ liệu giá vàng ở đâu nếu người dùng không nhập vào? Đây là phần em phụ trách — tích hợp API từ các nguồn bên thứ ba. Nhóm em chọn 2 nguồn: Thứ nhất là Binance — sàn giao dịch tài sản số lớn nhất thế giới, cung cấp API công khai với giá Vàng thực (PAXG) theo từng phiên giao dịch. Thứ hai là Open Exchange Rates — tổ chức cung cấp tỷ giá tiền tệ quốc tế theo thời gian thực, để quy đổi kết quả ra Việt Nam Đồng."*
+> *"Cảm ơn bạn Hương. Kính thưa thầy cô, em là Quốc Đạt, em xin trình bày về phần tích hợp 3rd-Party APIs. Quay lại bài toán: Server lấy dữ liệu giá vàng ở đâu nếu người dùng không nhập vào? Nhóm em để Server đóng vai Client đi gọi ra ngoài. Nhóm tự động truy xuất từ 2 nguồn thực tế: Binance để lấy giá nến Vàng PAXG theo ngày, và Open Exchange Rates để lấy tỷ giá USD sang VND thời gian thực. Sau đó lấy kết quả AI nhân với tỷ giá để ra được số tiền VNĐ hiện tại."*
 
 ---
 
-<!-- SLIDE 5 - Xuân Hương -->
+<!-- SLIDE 5 - Quốc Đạt -->
 ## Slide 5: Xử Lý Bất Đồng Bộ & Phân Tích JSON
-### (Xuân Hương)
+### (Quốc Đạt)
 
 **Luồng xử lý trong `/realtime` Endpoint:**
 ```
 1. Server gửi HTTP GET → Binance API
-   └─ Nhận mảng Klines JSON → Trích Open, High, Low, Volume
-
 2. Server gửi HTTP GET → Exchange Rates API
-   └─ Đọc node "VND" → Nhận tỷ giá đổi
-
-3. Gộp 4 giá trị → Đưa vào AI Model
-   └─ AI trả về PredictedClose (USD)
-
-4. Tính: PredictedClose × VND Rate = Giá VNĐ
-   └─ Trả về JSON cho Client
+3. Gộp 4 giá trị → Model AI tính toán
+4. Kết quả x Tỷ giá → Trả về JSON cho Client
 ```
-Toàn bộ luồng chạy **bất đồng bộ (async/await)** — Server không bị treo khi chờ mạng.
+
+**Tại sao dùng async/await?**
+- Server không bị 'đứng' khi chờ mạng.
+- Xử lý nhiều request đồng thời, tăng tổng throughput.
+- Phân tích Node JSON trực tiếp (DOM Tree) không cần map toàn bộ object.
 
 > 🎙️ **Script:**
-> *"Đây là luồng xử lý bên trong endpoint /realtime. Khi có yêu cầu gọi vào, Server đồng thời khởi tạo 2 kết nối ra ngoài: một đến Binance để lấy dữ liệu nến vàng, một đến Exchange Rates để lấy tỷ giá. Toàn bộ sử dụng kỹ thuật lập trình bất đồng bộ async/await — nghĩa là Server không bị đứng đợi trong khi chờ phản hồi mạng. Sau khi nhận đủ dữ liệu, hệ thống dùng thư viện System.Text.Json để phân tích cấu trúc JSON phản hồi, trích xuất đúng các node cần thiết mà không cần ánh xạ toàn bộ object — cực kỳ nhẹ và nhanh."*
+> *"Để luồng gọi này hiệu quả nhất, nhóm em sử dụng kỹ thuật lập trình bất đồng bộ async/await. Khi có yêu cầu, Server đồng thời khởi tạo 2 kết nối ra Binance và Exchange Rates. Khi đó luồng xử lý không hề bị chặn lại chờ đợi mạng, giúp Server tiết kiệm tài nguyên. Sau khi nhận đủ dữ liệu, hệ thống dùng System.Text.Json đọc trực tiếp các Node cần thiết trên chuỗi JSON gửi về mà không cần ánh xạ (map) ra toàn bộ Object lớn, rất nhẹ và tiết kiệm thanh ghi."*
 
 ---
 
-<!-- SLIDE 6 - Xuân Hương -->
-## Slide 6: IHttpClientFactory - Giải Pháp Gọi API Chuyên Nghiệp
-### (Xuân Hương)
+<!-- SLIDE 6 - Quốc Đạt -->
+## Slide 6: IHttpClientFactory - Gọi API Chuyên Nghiệp
+### (Quốc Đạt)
 
-**Vấn đề khi dùng `new HttpClient()` trực tiếp:**
-- Mỗi Request tạo ra một kết nối Socket mới → **Cạn kiệt Port (Socket Exhaustion)**.
-- Ảnh hưởng nghiêm trọng khi có hàng trăm người dùng cùng lúc.
+**Vấn đề với `new HttpClient()`:**
+- Cạn kiệt Port (Socket Exhaustion) nếu người dùng gọi liên tục.
 
-**Giải pháp: `IHttpClientFactory`**
-- Được đăng ký vào **Dependency Injection Container** — quản lý vòng đời bộ gọi HTTP.
-- Tái sử dụng kết nối Socket hiệu quả → **Không bao giờ bị cạn kiệt Port**.
-- Cấu hình 1 dòng trong `ServiceExtensions.cs`: `builder.Services.AddHttpClient()`
+**Giải pháp: IHttpClientFactory**
+- Quản lý tập trung tại Dependency Injection Container.
+- Tái sử dụng kết nối Socket.
+- `builder.Services.AddHttpClient();`
 
 > 🎙️ **Script:**
-> *"Một điểm kỹ thuật quan trọng: khi gọi API bên ngoài, nhiều lập trình viên hay viết thẳng 'new HttpClient()'. Cách này tưởng đơn giản nhưng lại gây ra lỗi cực kỳ nguy hiểm gọi là Socket Exhaustion — hệ thống dùng quá nhiều cổng mạng đến mức cạn kiệt, dẫn đến sập Server. Nhóm em giải quyết bằng cách dùng IHttpClientFactory, đăng ký vào hệ thống Dependency Injection của .NET. Factory này quản lý vòng đời của các kết nối HTTP một cách thông minh, tái sử dụng Socket hiệu quả, đảm bảo hệ thống luôn ổn định dù có hàng nghìn người dùng đồng thời. Em xin nhường phần tiếp theo cho bạn Văn Nguyễn."*
+> *"Một điểm mạnh nữa về kỹ thuật: nhóm em không khởi tạo 'new HttpClient' mỗi khi gọi ra ngoài, làm như vậy sẽ dẫn đến Socket Exhaustion — hiểu nôm na là cạn kiệt cổng mạng khi scale lớn. Chúng em dùng IHttpClientFactory, cung cấp sẵn bởi .NET DI Container. Factory này tái sử dụng các kết nối HTTP vô cùng thông minh, không lo rò rỉ Socket và giúp ứng dụng chịu tải cao cực tốt. Phần tiếp theo về hiệu năng, xin mời bạn Văn Nguyễn."*
 
 ---
 
@@ -147,42 +146,47 @@ Toàn bộ luồng chạy **bất đồng bộ (async/await)** — Server không
 ## Slide 7: Bài Toán Hiệu Năng - Hosting ML Model
 ### (Văn Nguyễn)
 
-**Vấn đề đặc thù của Machine Learning API:**
-- File `GoldModel.zip` nặng **~43MB**, chứa toàn bộ cấu trúc thần kinh nhân tạo.
-- Nếu nạp lại model mỗi lần có Request → **Tốn hàng giây xử lý mỗi lượt gọi**.
-- Hệ thống nhiều người dùng đồng thời → **Memory Leak, Server Crash**.
+**Vấn đề đặc thù khi Host Machine Learning làm REST API:**
+- File `GoldModel.zip` nặng **~43MB**.
+- Nếu nạp lại model mỗi lần có Request → Tốn hàng giây xử lý, rất chậm.
 
-**Yêu cầu giải pháp:**
-- Nạp model **đúng 1 lần** lúc khởi động.
-- Phục vụ **song song** hàng ngàn request mà không xung đột.
+**Kịch bản nguy hiểm:** Nạp lại model mỗi request = Tràn RAM (Memory Leak)
+
+```csharp
+// SAI -- nạp lại model mỗi request
+app.MapPost("/predict", (input) => {
+    var ctx = new MLContext();
+    var model = ctx.Model.Load("GoldModel.zip", ...);
+    // -> RAM tăng vô hạn theo số lượng request
+});
+```
 
 > 🎙️ **Script:**
-> *"Kính chào thầy cô, em là Văn Nguyễn, em sẽ trình bày về phần tối ưu hiệu năng và bảo mật hệ thống. Khi tích hợp một mô hình Machine Learning vào Web API, nhóm em gặp phải thách thức đặc thù: file GoldModel.zip nặng 43MB và cực kỳ tốn tài nguyên để khởi tạo. Nếu mỗi lần người dùng gọi API mà Server lại nạp lại file này từ đầu, thì mỗi request sẽ mất nhiều giây và khi nhiều người gọi cùng lúc, Server sẽ hết RAM và sập. Đây là bài toán nhóm em phải giải quyết."*
+> *"Kính chào thầy cô, em là Văn Nguyễn, em phụ trách tối ưu hiệu năng và bảo mật hệ thống. File AI học máy của nhóm nặng hơn 40MB. Thách thức lớn là: nếu mỗi lúc nhận Request, API lại đọc file 40MB này từ đĩa vào RAM thì sẽ mất hàng chục giây cho mỗi lượt tương tác, vài nghìn Request vào cùng lúc chắc chắn Server sẽ sập vì tràn RAM. Đoạn code sai lầm ở trên là thứ chúng em đã loại bỏ hoàn toàn."*
 
 ---
 
 <!-- SLIDE 8 - Văn Nguyễn -->
-## Slide 8: PredictionEnginePool - Quản Trị RAM Thông Minh
+## Slide 8: PredictionEnginePool - Quản Trị RAM
 ### (Văn Nguyễn)
 
-**Giải pháp: Object Pooling với `PredictionEnginePool`**
+**Giải pháp: PredictionEnginePool (Object Pooling)**
 
 ```csharp
-// Đăng ký 1 lần duy nhất lúc Server khởi động
+// ĐÚNG -- đăng ký 1 lần duy nhất lúc Server khởi động
 builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>(
     modelName: "GoldModel",
-    modelBuilder: ctx => /* Nạp GoldModel.zip vào RAM */
+    modelBuilder: ctx => ctx.Model.Load("GoldModel.zip", ...)
 );
 ```
 
 **Cơ chế hoạt động:**
-- 🟢 Server start → Nạp model vào RAM **đúng 1 lần**.
-- 🔄 Request đến → **Mượn** Engine từ Pool → Dự báo → **Trả lại** Pool.
-- ✅ **Thread-Safe**: Hàng ngàn request chạy song song không xung đột.
-- ✅ **Zero Memory Leak**: Pool tự quản lý vòng đời object.
+- Server start → Nạp model vào RAM **đúng 1 lần**.
+- Tái sử dụng: Mượn Engine → Dự báo → Trả lại Pool.
+- **Thread-safe**: Không xung đột, không rò rỉ Memory Leak.
 
 > 🎙️ **Script:**
-> *"Giải pháp nhóm em áp dụng là PredictionEnginePool — một kỹ thuật quản lý tài nguyên gọi là Object Pooling. Thay vì tạo mới object mỗi lần dùng, hệ thống tạo sẵn một 'hồ bơi' các Engine đã sẵn sàng trong RAM. Khi có Request đến, Server chỉ việc mượn một Engine từ hồ này, thực hiện dự báo, rồi trả lại. Quá trình này đảm bảo Thread-Safe — nghĩa là hàng nghìn người dùng cùng gọi API một lúc mà không có hai người nào tranh nhau cùng một Engine, không xảy ra xung đột dữ liệu hay Memory Leak."*
+> *"Cách chúng em giải quyết là nhúng PredictionEnginePool — một dạng Object Pooling của thư viện Microsoft.ML. Thay vì load model liên tục, Pooling chỉ load model lên RAM đúng 1 lần duy nhất khi Server khởi động. Khi có Request, API chỉ mượn một Engine đang rảnh trong hồ bơi (Pool), dùng xong lại trả về. Cơ chế này an toàn về Thread (Thread-Safe) cho dù có hàng nghìn lượt Request đồng thời và loại bỏ hoàn toàn hiện tượng Memory Leak."*
 
 ---
 
@@ -190,111 +194,87 @@ builder.Services.AddPredictionEnginePool<ModelInput, ModelOutput>(
 ## Slide 9: Rate Limiting - Tường Lửa Chống Tấn Công
 ### (Văn Nguyễn)
 
-**Nguy cơ:** API công khai trên Internet → Dễ bị **DDoS** (tấn công làm nghẽn Server).
+**Cấu hình Fixed Window Rate Limiting Middleware:**
+- **Permit Limit:** 5 Request
+- **Window:** 10 giây / IP
+- **Kết quả khi vượt quá:** HTTP 429 Too Many Requests
 
-**Giải pháp: Fixed Window Rate Limiting (Middleware)**
-
-```
-Mỗi IP được cấp phát:
-  ┌─────────────────────────────────────┐
-  │  Tối đa 5 Request / 10 giây        │
-  │  Hàng chờ: 2 Request (Queue)       │
-  └─────────────────────────────────────┘
-
-Request thứ 6 trở đi →
-  ❌ HTTP 429 Too Many Requests
-```
-
-**Điểm mấu chốt:** Middleware chặn ngay ở tầng **HTTP Pipeline** — trước khi Request chạm vào AI Model → Bảo vệ CPU và RAM tuyệt đối.
+**Hệ quả bảo vệ:**
+- Bị chặn tức thì tại tầng HTTP Pipeline.
+- Chưa chạm vào AI Model → CPU & RAM hoàn toàn an toàn.
 
 > 🎙️ **Script:**
-> *"Một vấn đề nữa với API công khai là nguy cơ bị tấn công DDoS — kẻ tấn công bắn hàng nghìn Request một giây để làm Server quá tải. Nhóm em tích hợp Rate Limiting Middleware — một lớp bảo vệ nằm ngay ở cổng vào của hệ thống. Cơ chế hoạt động theo thuật toán Fixed Window: mỗi địa chỉ IP chỉ được phép gửi tối đa 5 Request trong 10 giây. Nếu vượt ngưỡng, hệ thống lập tức từ chối bằng HTTP 429 — Too Many Requests. Điều quan trọng là Middleware chặn ở tầng HTTP Pipeline, nghĩa là Request bị trả về ngay từ cổng mà chưa hề chạm vào Model AI — bảo vệ hoàn toàn tài nguyên Server. Phần tiếp theo, mời bạn Quốc Đạt."*
+> *"Bên cạnh tối ưu RAM, API của chúng em là công khai nên rất dễ bị phá hoại hoặc spam bằng DDoS. Nhóm em đã bật tường lửa Rate Limiting theo thuật toán Fixed Window. Mỗi IP sẽ chỉ được gọi 5 Request trong 10 giây. Hãy tưởng tượng có bot spam 1 triệu Request, nó sẽ bị chặn ngay tại tầng mạng HTTP Pipeline và trả về HTTP 429 Too Many Requests, hoàn toàn không đẩy lượng rác đó vào phân tích AI. Server được bảo vệ tuyệt đối. Tiếp theo mời bạn Thành Trung."*
 
 ---
 
-<!-- SLIDE 10 - Quốc Đạt -->
+<!-- SLIDE 10 - Thành Trung -->
 ## Slide 10: Docker - Đóng Gói & Chuẩn Hóa Môi Trường
-### (Quốc Đạt)
+### (Thành Trung)
 
-**Vấn đề triển khai truyền thống:**
-- *"Code chạy trên máy em, sao trên Server lại lỗi?"* → Xung đột môi trường .NET.
+**Vấn đề:** Môi trường khác nhau sinh lỗi (Code chạy máy em, sao lên Server lỗi?).
 
-**Giải pháp: Docker Containerization**
+**Giải pháp: Docker Multi-stage Build**
 
 ```dockerfile
-# Stage 1: Build (dùng SDK nặng ~800MB)
+# Stage 1: Build (SDK ~800MB)
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-RUN dotnet publish -c Release -o /app/publish
-
-# Stage 2: Runtime (chỉ Runtime ~200MB)
+...
+# Stage 2: Runtime (Chỉ Runtime ~200MB)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "GoldPrice_API.dll"]
 ```
 
-**Multi-stage build** → Image production chỉ **~200MB**, không chứa SDK thừa.
+Hình ảnh triển khai cuối chỉ ~200MB, đóng gói chặt chẽ chỉ 1 lệnh `docker-compose up -d`.
 
 > 🎙️ **Script:**
-> *"Kính thưa thầy cô, em là Quốc Đạt, em phụ trách phần triển khai hệ thống lên môi trường thực tế. Khi làm việc theo nhóm, một vấn đề rất phổ biến là: code chạy tốt trên máy của người này nhưng lại lỗi trên máy người khác hoặc trên Server — do xung đột phiên bản .NET. Docker giải quyết triệt để vấn đề này bằng cách đóng gói toàn bộ ứng dụng cùng với môi trường chạy của nó vào một Container cô lập. Nhóm em sử dụng kỹ thuật Multi-stage Build: giai đoạn 1 dùng SDK đầy đủ để biên dịch, giai đoạn 2 chỉ lấy phần runtime tối thiểu. Kết quả là Docker Image chỉ nặng khoảng 200MB — gọn nhẹ và sẵn sàng chạy trên bất kỳ Server nào có Docker."*
+> *"Cảm ơn bạn Nguyễn. Thưa thầy cô, em là Thành Trung, em xin khép lại với kiến trúc triển khai DevOps. Lúc làm nhóm, một vấn đề cực kỳ khó chịu là 'Code máy em chạy nhưng copy sang máy bạn cài .NET bản khác là lỗi'. Chúng em chấm dứt điều này với Docker. Chúng em đóng thùng toàn bộ Server vào Container, viết Dockerfile theo Multi-Stage Build — giai đoạn một dùng SDK cả Gb để Build, giai đoạn hai chuyển thành Runtime nhẹ tựa lông hồng, chỉ 200MB. Mọi máy chạy đều đồng nhất bản chất, 1 lệnh duy nhất là hệ thống vận hành."*
 
 ---
 
-<!-- SLIDE 11 - Quốc Đạt -->
-## Slide 11: CI/CD Pipeline & Triển Khai Trên `nttspace.online`
-### (Quốc Đạt)
+<!-- SLIDE 11 - Thành Trung -->
+## Slide 11: CI/CD & Triển Khai Trên nttspace.online
+### (Thành Trung)
 
 **Quy trình tự động hóa (GitHub Actions):**
-```
-git push lên GitHub
-    ↓
-GitHub Actions tự động kích hoạt
-    ↓
-Build Docker Image
-    ↓
-Push lên GitHub Container Registry (GHCR)
-    ↓
-Server kéo Image mới về & Restart
-```
+1. [PUSH] git push lên GitHub
+2. >> GitHub Actions kích hoạt
+3. >> Build Docker Image
+4. >> Push lên GHCR (GitHub Container Registry)
+5. >> Server tự pull image mới & restart.
 
-**Nginx Reverse Proxy:**
-- Tiếp nhận traffic từ domain `nttspace.online` (Port 80/443).
-- Chuyển tiếp vào Docker Container đang lắng nghe nội bộ.
-- **Kết quả:** API Live tại `https://nttspace.online/api/v1/predictions`
+**Nginx Reverse Proxy:** Traffic HTTPS (Cổng 443) đi vào `nttspace.online` → Proxy an toàn chuyển vào Docker (Cổng 5235).
 
 > 🎙️ **Script:**
-> *"Sau khi đã có Docker Image, bước tiếp theo là tự động hóa quy trình deploy. Nhóm em thiết lập GitHub Actions — mỗi khi thành viên push code lên GitHub, một pipeline tự động sẽ chạy: build Docker Image mới, kiểm tra, rồi đẩy lên kho lưu trữ GHCR — GitHub Container Registry. Trên Server thực tế, nhóm em cài Nginx làm Reverse Proxy: Nginx tiếp nhận tất cả request từ domain nttspace.online rồi chuyển tiếp vào container đang chạy bên trong. Nhờ đó, toàn bộ hệ thống X-AURUM hiện đang hoạt động trực tuyến, bất kỳ ai trên thế giới cũng có thể gọi API tại địa chỉ nttspace.online."*
+> *"Để tiết kiệm công sức deploy, nhóm tích hợp Workflow GitHub Actions. Mỗi khi ấn Push Code vòng tuần hoàn sẽ chạy: Git Server tự Build Docker Image, đẩy về Registry, và Virtual Machine trên Cloud sẽ tự biết kéo Image mới về khởi động lại không gián đoạn dịch vụ. Ngay hiện tại, hệ thống đã được Public Production tại domain nttspace.online với chứng chỉ bảo mật đầy đủ, sử dụng Nginx Reverse Proxy làm mặt tiền hứng toàn bộ traffic để truyền vào bên trong."*
 
 ---
 
-<!-- SLIDE 12 - Quốc Đạt - DEMO -->
+<!-- SLIDE 12 - Thành Trung -->
 ## Slide 12: Live Demo Trên Swagger
-### (Quốc Đạt)
+### (Thành Trung)
 
-**Demo 1: Endpoint GET /realtime**
-1. Mở Swagger UI trên Server.
-2. Chọn `GET /api/v1/predictions/realtime` → **Execute**.
-3. Server tự gọi Binance + Exchange Rates → AI tính toán → Trả về JSON.
-4. Kết quả: `predictedClose ≈ $2350`, `predictedCloseVnd ≈ 120.000.000 VND`.
+**Demo 1: GET /api/v1/predictions/realtime**
+1. Mở Swagger UI trên `nttspace.online`.
+2. Trả JSON giá thế giới + giá chuyển đổi VND.
 
-**Demo 2: Kiểm tra Rate Limiting**
-1. Chọn `POST /api/v1/predictions` → Execute liên tiếp **7 lần nhanh**.
-2. Lần 1-5: Response `200 OK` bình thường.
-3. Lần 6-7: Response `429 Too Many Requests` → ✅ Tường lửa hoạt động.
+**Demo 2: Rate Limiting**
+1. Thực thi `POST` liên tục trên Swagger
+2. Vượt hạn mức → báo lỗi hệ thống cảnh báo đỏ 429.
 
 > 🎙️ **Script:**
-> *"Và bây giờ em xin phép demo trực tiếp. Đây là Swagger UI đang chạy trên Server thật tại nttspace.online. Em sẽ gọi GET /realtime — thầy cô thấy Server tự động kéo giá vàng thực tế từ Binance, gộp với tỷ giá từ Exchange Rates, đưa vào mô hình AI và trả về kết quả là hơn 120 triệu đồng cho mỗi đơn vị giao dịch. Tiếp theo, em sẽ giả lập tấn công spam bằng cách bấm Execute liên tục — thầy cô thấy từ lần thứ 6 trở đi hệ thống lập tức trả về HTTP 429, tường lửa Rate Limiting hoạt động hoàn hảo. Đó là toàn bộ hệ thống X-AURUM của Nhóm 3. Nhóm em xin cảm ơn thầy cô và xin lắng nghe câu hỏi phản biện ạ."*
+> *"Và sau đây, không có gì thuyết phục hơn là chạy demo thực tế. Trên bảng lớn là màn hình Swagger thật từ tên miền chính thức của nhóm. Em sẽ thực thi lệnh GET Realtime không cấp dữ liệu — màn hình tức thời hiển thị giá vàng thế giới và đổi ra VND trực tiếp. Kế đến, em xin spam nút Execute liên tục vào Endpoint POST. Như bạn Nguyễn đã thiết kế phần trước, thầy cô có thể thấy màn hình bật qua trạng thái 429 Too Many Requests — tường lửa đã thành công khóa IP của chính em lại. Đó là tất cả tính năng của dự án X-AURUM!"*
 
 ---
 
-# Cảm Ơn Thầy Cô & Hội Đồng!
-
-**Nhóm 3** xin lắng nghe câu hỏi và phản biện.
+# CẢM ƠN THẦY CÔ & HỘI ĐỒNG!
+Nhóm 3 xin lắng nghe câu hỏi phản biện.
 
 | Thành viên | Phần trình bày |
 |---|---|
-| Thành Trung | Kiến trúc API & Swagger |
-| Xuân Hương | Tích hợp 3rd-Party APIs |
+| Xuân Hương | Kiến trúc API & Swagger |
+| Quốc Đạt | Tích hợp 3rd-Party APIs |
 | Văn Nguyễn | Hiệu năng & Bảo mật |
-| Quốc Đạt | DevOps & Live Demo |
+| Thành Trung | DevOps & Live Demo |
 
-**`nttspace.online`** — Hệ thống đang chạy Live!
+**`nttspace.online`**
