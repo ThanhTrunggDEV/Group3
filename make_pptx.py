@@ -327,7 +327,6 @@ def s7(slide):
         "// ❌ Cách sai — nạp lại model mỗi request\napp.MapPost('/predict', (input) => {\n    var ctx = new MLContext();\n    var model = ctx.Model.Load('GoldModel.zip', ...);\n    // → RAM tăng vô hạn theo số lượng request\n});",
         Inches(0.5), Inches(3.65), Inches(12))
 
-make_content_slide("Slide 7 · Bài Toán Hiệu Năng - Hosting ML Model", "Văn Nguyễn", s7)
 
 def s8(slide):
     add_textbox(slide, "Giải pháp: PredictionEnginePool (Object Pooling)",
@@ -344,7 +343,6 @@ def s8(slide):
     add_bullet_block(slide, items_l, Inches(0.5), Inches(3.75), Inches(6.2), font_size=14)
     add_bullet_block(slide, items_r, Inches(6.8), Inches(3.75), Inches(6), font_size=14)
 
-make_content_slide("Slide 8 · PredictionEnginePool - Quản Trị RAM", "Văn Nguyễn", s8)
 
 def s9(slide):
     add_textbox(slide, "Nguy cơ: API công khai → Dễ bị DDoS (tấn công làm nghẽn Server)",
@@ -376,7 +374,6 @@ def s9(slide):
                 Inches(0.7), Inches(5.45), Inches(12), Inches(0.65),
                 font_size=14, color=ACCENT_BLUE, italic=True)
 
-make_content_slide("Slide 9 · Rate Limiting - Tường Lửa Chống Tấn Công", "Văn Nguyễn", s9)
 
 # ════════════════════════════════════════════════════
 # SLIDES 10-12 — Quốc Đạt
