@@ -385,7 +385,7 @@
                 </div>
 
                 <button type="submit" class="btn-predict" id="btnSubmit">
-                    Initialize Core
+                    Predict Manually
                 </button>
             </form>
         </div>
@@ -445,6 +445,58 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 4000);
         }
+
+        // --- NEW: AUTONOMOUS REALTIME SYNC ---
+        window.addEventListener('DOMContentLoaded', async () => {
+            const btn = document.getElementById('btnSubmit');
+            const core = document.getElementById('coreEl');
+            const resVal = document.getElementById('resValue');
+
+            btn.innerText = "Syncing Live Market...";
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none";
+            document.querySelectorAll('.ring').forEach(r => r.style.animationDuration = '0.5s');
+
+            try {
+                const response = await fetch('/api/v1/predictions/realtime', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const responseJson = await response.json();
+                    const data = responseJson.data;
+
+                    // Auto-fill the manual inputs to show what the AI consumed
+                    document.getElementById('inpOpen').value = data.inputsUsed.open;
+                    document.getElementById('inpHigh').value = data.inputsUsed.high;
+                    document.getElementById('inpLow').value = data.inputsUsed.low;
+                    document.getElementById('inpVol').value = data.inputsUsed.volume;
+
+                    // Animate the result
+                    animateValue(resVal, 0, data.predictedClose, 2000);
+                    
+                    setTimeout(() => {
+                        document.getElementById('resValueVnd').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.predictedCloseVnd);
+                        document.getElementById('resLiveWorld').innerText = formatter.format(data.liveWorldPrice);
+                        showToast("Autonomous Sync: Live Market Data Processed.");
+                    }, 2000);
+                } else if (response.status === 429) {
+                    showToast("Defensive Measure: Rate Limit Exceeded.");
+                } else {
+                    showToast("Warning: Realtime Sync Failed.");
+                }
+            } catch (err) {
+                showToast("Connection Interrupted. Ensure backend is active.");
+            } finally {
+                setTimeout(() => {
+                    btn.innerText = "Predict Manually";
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "all";
+                    document.querySelectorAll('.ring').forEach(r => r.style.animationDuration = '');
+                }, 2000);
+            }
+        });
 
         async function predictPrice() {
             const btn = document.getElementById('btnSubmit');

@@ -69,6 +69,66 @@ namespace GoldPrice_API.Endpoints
             })
             .RequireRateLimiting("fixed");
 
+            apiGroup.MapGet("/realtime", async (PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, System.Net.Http.IHttpClientFactory httpClientFactory) =>
+            {
+                var client = httpClientFactory.CreateClient();
+                float open = 0f, high = 0f, low = 0f, volume = 0f;
+                float vndRate = 25000f;
+
+                try
+                {
+                    // 1. Fetch real-time OHLCV from Binance (1-day kline)
+                    var binanceResponse = await client.GetAsync("https://api.binance.com/api/v3/klines?symbol=PAXGUSDT&interval=1d&limit=1");
+                    if (binanceResponse.IsSuccessStatusCode)
+                    {
+                        var json = await binanceResponse.Content.ReadAsStringAsync();
+                        var doc = System.Text.Json.JsonDocument.Parse(json);
+                        var kline = doc.RootElement[0];
+                        
+                        open = float.Parse(kline[1].GetString(), System.Globalization.CultureInfo.InvariantCulture);
+                        high = float.Parse(kline[2].GetString(), System.Globalization.CultureInfo.InvariantCulture);
+                        low = float.Parse(kline[3].GetString(), System.Globalization.CultureInfo.InvariantCulture);
+                        volume = float.Parse(kline[5].GetString(), System.Globalization.CultureInfo.InvariantCulture);
+                    }
+
+                    // 2. Fetch Exchange Rate (USD -> VND)
+                    var erResponse = await client.GetAsync("https://open.er-api.com/v6/latest/USD");
+                    if (erResponse.IsSuccessStatusCode)
+                    {
+                        var json = await erResponse.Content.ReadAsStringAsync();
+                        var doc = System.Text.Json.JsonDocument.Parse(json);
+                        vndRate = doc.RootElement.GetProperty("rates").GetProperty("VND").GetSingle();
+                    }
+                }
+                catch
+                {
+                    return Results.StatusCode(500);
+                }
+
+                var input = new ModelInput { Open = open, High = high, Low = low, Volume = volume };
+                var prediction = predictionEnginePool.Predict(modelName: "GoldModel", example: input);
+
+                return Results.Ok(new 
+                { 
+                    success = true,
+                    data = new 
+                    { 
+                        inputsUsed = new { open, high, low, volume },
+                        predictedClose = prediction.PredictedClose,
+                        predictedCloseVnd = prediction.PredictedClose * vndRate,
+                        liveWorldPrice = open, // Approximated by the day's open or we could use close
+                        exchangeRateVnd = vndRate
+                    }
+                });
+            })
+            .WithName("GetRealtimeGoldPricePrediction")
+            .WithOpenApi(operation => new(operation) 
+            { 
+                Summary = "Dự báo giá Vàng tự động (Realtime)", 
+                Description = "Tự động lấy dữ liệu OHLCV trực tiếp từ thị trường và đưa vào mô hình phân tích." 
+            })
+            .RequireRateLimiting("fixed");
+
             return app;
         }
     }
