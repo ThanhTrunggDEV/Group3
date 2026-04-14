@@ -160,7 +160,7 @@ def s1(slide):
         "GoldPrice_API/\n├── Endpoints/    → Định tuyến API Routes\n├── Models/       → Input/Output Schema\n└── Extensions/   → DI, Rate Limit, ML Model",
         Inches(7), Inches(2.1), Inches(5.8))
 
-make_content_slide("Slide 1 · Bài Toán & Kiến Trúc Cốt Lõi", "Thành Trung", s1)
+make_content_slide("Slide 1 · Bài Toán & Kiến Trúc Cốt Lõi", "Xuân Hương", s1)
 
 # ── Slide 2
 def s2(slide):
@@ -194,7 +194,7 @@ def s2(slide):
                 Inches(7), Inches(3.15), Inches(5.8), Inches(2),
                 font_size=14, color=LIGHT_GRAY)
 
-make_content_slide("Slide 2 · Thiết Kế Hai Luồng Endpoint", "Thành Trung", s2)
+make_content_slide("Slide 2 · Thiết Kế Hai Luồng Endpoint", "Xuân Hương", s2)
 
 # ── Slide 3
 def s3(slide):
@@ -220,7 +220,7 @@ def s3(slide):
                 Inches(0.7), Inches(5.45), Inches(12), Inches(0.65),
                 font_size=14, color=RGBColor(0x86,0xEF,0xAC), italic=True)
 
-make_content_slide("Slide 3 · Tài Liệu API Tự Động Với Swagger", "Thành Trung", s3)
+make_content_slide("Slide 3 · Tài Liệu API Tự Động Với Swagger", "Xuân Hương", s3)
 
 # ════════════════════════════════════════════════════
 # SLIDES 4-6 — Xuân Hương
@@ -252,7 +252,7 @@ def s4(slide):
         add_textbox(slide, data, x+Inches(0.15), Inches(4.15), Inches(5.7), Inches(0.7),
                     font_size=13, color=WHITE)
 
-make_content_slide("Slide 4 · Vấn Đề API Cô Lập & Giải Pháp", "Xuân Hương", s4)
+make_content_slide("Slide 4 · Vấn Đề API Cô Lập & Giải Pháp", "Quốc Đạt", s4)
 
 def s5(slide):
     add_textbox(slide, "Luồng xử lý bên trong /realtime endpoint (bất đồng bộ):",
@@ -275,7 +275,7 @@ def s5(slide):
         "   chỉ đọc đúng node cần thiết.",
     ], Inches(7.8), Inches(2.1), Inches(5))
 
-make_content_slide("Slide 5 · Xử Lý Bất Đồng Bộ & Phân Tích JSON", "Xuân Hương", s5)
+make_content_slide("Slide 5 · Xử Lý Bất Đồng Bộ & Phân Tích JSON", "Quốc Đạt", s5)
 
 def s6(slide):
     add_textbox(slide, "Vấn đề khi dùng new HttpClient() trực tiếp:",
@@ -305,7 +305,7 @@ def s6(slide):
                 Inches(0.7), Inches(5.45), Inches(12), Inches(0.65),
                 font_size=14, color=ACCENT_BLUE, italic=True)
 
-make_content_slide("Slide 6 · IHttpClientFactory - Gọi API Chuyên Nghiệp", "Xuân Hương", s6)
+make_content_slide("Slide 6 · IHttpClientFactory - Gọi API Chuyên Nghiệp", "Quốc Đạt", s6)
 
 # ════════════════════════════════════════════════════
 # SLIDES 7-9 — Văn Nguyễn
@@ -407,7 +407,7 @@ def s10(slide):
         "   chỉ với 1 lệnh duy nhất.",
     ], Inches(7.2), Inches(2.6), Inches(5.6), font_size=13)
 
-make_content_slide("Slide 10 · Docker - Đóng Gói & Chuẩn Hóa Môi Trường", "Quốc Đạt", s10)
+make_content_slide("Slide 10 · Docker - Đóng Gói & Chuẩn Hóa Môi Trường", "Thành Trung", s10)
 
 def s11(slide):
     add_textbox(slide, "Quy trình CI/CD tự động (GitHub Actions):",
@@ -440,7 +440,7 @@ def s11(slide):
     add_textbox(slide, "🌐  nttspace.online  —  LIVE!", Inches(7.3), Inches(5.1), Inches(5.5), Inches(0.5),
                 font_size=16, bold=True, color=BG_DARK, align=PP_ALIGN.CENTER)
 
-make_content_slide("Slide 11 · CI/CD & Triển Khai Trên nttspace.online", "Quốc Đạt", s11)
+make_content_slide("Slide 11 · CI/CD & Triển Khai Trên nttspace.online", "Thành Trung", s11)
 
 def s12(slide):
     add_textbox(slide, "Demo 1 — GET /api/v1/predictions/realtime",
@@ -472,7 +472,7 @@ def s12(slide):
                 Inches(0.7), Inches(5.4), Inches(12), Inches(0.7),
                 font_size=16, bold=True, color=RGBColor(0x86,0xEF,0xAC), align=PP_ALIGN.CENTER)
 
-make_content_slide("Slide 12 · Live Demo Trên Swagger", "Quốc Đạt", s12)
+make_content_slide("Slide 12 · Live Demo Trên Swagger", "Thành Trung", s12)
 
 # ════════════════════════════════════════════════════
 # FINAL SLIDE
@@ -494,10 +494,10 @@ def make_final_slide():
     gold_line(slide, Inches(3.1))
 
     members = [
-        ("Thành Trung",  "Kiến trúc API & Swagger"),
-        ("Xuân Hương",   "Tích hợp 3rd-Party APIs"),
+        ("Xuân Hương",   "Kiến trúc API & Swagger"),
+        ("Quốc Đạt",     "Tích hợp 3rd-Party APIs"),
         ("Văn Nguyễn",   "Hiệu năng & Bảo mật"),
-        ("Quốc Đạt",     "DevOps & Live Demo"),
+        ("Thành Trung",  "DevOps & Live Demo"),
     ]
     col_w = Inches(3)
     for i, (name, role) in enumerate(members):
