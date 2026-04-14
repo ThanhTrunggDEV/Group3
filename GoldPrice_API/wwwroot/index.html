@@ -410,6 +410,17 @@
                 CONFIDENCE LEVEL: <span style="color:#10B981">98.4%</span>
             </div>
 
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; width: 100%; max-width: 400px;">
+                <div style="flex: 1; background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 12px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Equivalent (VND)</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: #10B981;" id="resValueVnd">--- ₫</div>
+                </div>
+                <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem; text-align: center;">
+                    <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Live Binance PaxG</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: #FFD700;" id="resLiveWorld">--- $</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -468,6 +479,11 @@
                 if (response.ok) {
                     const responseJson = await response.json();
                     animateValue(resVal, 0, responseJson.data.predictedClose, 1500);
+                    
+                    setTimeout(() => {
+                        document.getElementById('resValueVnd').innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(responseJson.data.predictedCloseVnd);
+                        document.getElementById('resLiveWorld').innerText = formatter.format(responseJson.data.liveWorldPrice);
+                    }, 1500);
                 } else if (response.status === 429) {
                     showToast("Defensive Measure: Rate Limit Exceeded.");
                 } else {

@@ -23,6 +23,9 @@ namespace GoldPrice_API.Extensions
                 });
                 options.RejectionStatusCode = 429;
             });
+            
+            // Enable HTTP Client for calling external 3rd-party APIs
+            services.AddHttpClient();
 
             return services;
         }
