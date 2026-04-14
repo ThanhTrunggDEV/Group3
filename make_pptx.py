@@ -308,7 +308,7 @@ def s6(slide):
 make_content_slide("Slide 6 · IHttpClientFactory - Gọi API Chuyên Nghiệp", "Quốc Đạt", s6)
 
 # ════════════════════════════════════════════════════
-# SLIDES 7-9 — Văn Nguyễn
+# SLIDES 7-9 — Thành Trung (DevOps)
 # ════════════════════════════════════════════════════
 
 def s7(slide):
@@ -407,7 +407,7 @@ def s10(slide):
         "   chỉ với 1 lệnh duy nhất.",
     ], Inches(7.2), Inches(2.6), Inches(5.6), font_size=13)
 
-make_content_slide("Slide 10 · Docker - Đóng Gói & Chuẩn Hóa Môi Trường", "Thành Trung", s10)
+make_content_slide("Slide 7 · Docker - Đóng Gói & Chuẩn Hóa Môi Trường", "Thành Trung", s10)
 
 def s11(slide):
     add_textbox(slide, "Quy trình CI/CD tự động (GitHub Actions):",
@@ -440,7 +440,7 @@ def s11(slide):
     add_textbox(slide, "🌐  nttspace.online  —  LIVE!", Inches(7.3), Inches(5.1), Inches(5.5), Inches(0.5),
                 font_size=16, bold=True, color=BG_DARK, align=PP_ALIGN.CENTER)
 
-make_content_slide("Slide 11 · CI/CD & Triển Khai Trên nttspace.online", "Thành Trung", s11)
+make_content_slide("Slide 8 · CI/CD & Triển Khai Trên nttspace.online", "Thành Trung", s11)
 
 def s12(slide):
     add_textbox(slide, "Demo 1 — GET /api/v1/predictions/realtime",
@@ -472,7 +472,15 @@ def s12(slide):
                 Inches(0.7), Inches(5.4), Inches(12), Inches(0.7),
                 font_size=16, bold=True, color=RGBColor(0x86,0xEF,0xAC), align=PP_ALIGN.CENTER)
 
-make_content_slide("Slide 12 · Live Demo Trên Swagger", "Thành Trung", s12)
+make_content_slide("Slide 9 · Live Demo Trên Swagger", "Thành Trung", s12)
+
+# ════════════════════════════════════════════════════
+# SLIDES 10-12 — Văn Nguyễn (Memory & Security)
+# ════════════════════════════════════════════════════
+
+make_content_slide("Slide 10 · Bài Toán Hiệu Năng - Hosting ML Model", "Văn Nguyễn", s7)
+make_content_slide("Slide 11 · PredictionEnginePool - Quản Trị RAM", "Văn Nguyễn", s8)
+make_content_slide("Slide 12 · Rate Limiting - Tường Lửa Chống Tấn Công", "Văn Nguyễn", s9)
 
 # ════════════════════════════════════════════════════
 # FINAL SLIDE
@@ -496,8 +504,8 @@ def make_final_slide():
     members = [
         ("Xuân Hương",   "Kiến trúc API & Swagger"),
         ("Quốc Đạt",     "Tích hợp 3rd-Party APIs"),
-        ("Văn Nguyễn",   "Hiệu năng & Bảo mật"),
         ("Thành Trung",  "DevOps & Live Demo"),
+        ("Văn Nguyễn",   "Hiệu năng & Bảo mật"),
     ]
     col_w = Inches(3)
     for i, (name, role) in enumerate(members):
