@@ -32,11 +32,10 @@ namespace GoldPrice_CLI
             Console.WriteLine("=========================================================");
             Console.WriteLine("  Advanced Gold Price Forecasting CLI - LightGBM         ");
             Console.WriteLine("=========================================================\n");
-
-            DataPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "FINAL_USO.csv");
+            DataPath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "NEW_GOLD.csv");
             if (!File.Exists(DataPath))
             {
-                DataPath = @"D:\Coding Space\Project\Group3\FINAL_USO.csv";
+                DataPath = @"D:\Coding Space\Project\Group3\NEW_GOLD.csv";
             }
 
             var mlContext = new MLContext(seed: 42);
