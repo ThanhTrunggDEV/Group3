@@ -17,7 +17,7 @@ Dự án được ứng dụng các công nghệ tiêu chuẩn Enterprise:
 
 ---
 
-## 2. Kiến Trúc Cấu Trúc Đồ Án (Directory Structure)
+## 2. Kiến Trúc Cấu Trúc Mã Nguồn (Directory Structure)
 Mã nguồn được phân tách minh bạch thành các modules tự do (Decoupled):
 
 ```text

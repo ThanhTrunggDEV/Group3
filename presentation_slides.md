@@ -58,7 +58,7 @@ color: #e0e0e0
 **1. Tự động hóa Triển Khai (CI/CD DevOps):**
 - **Docker Multi-stage:** Chuyển hóa API thành Image. Giai đoạn Compile bằng SDK siêu nặng, sau đó trích xuất lõi ném sang Runtime Alpine (Chỉ vài MB).
 - **GitHub Actions:** Auto-trigger kiểm thử và Release thẳng image lên trạm GHCR. Giúp bất kỳ Cloud Server nào cài Docker thao tác Start hệ thống chỉ bằng 1 dòng Lệnh gốc.
-- **Nginx Reverse Proxy:** Định tuyến trực tiếp luồng truy cập trên mạng lưới Public vào sâu trong Docker Hub container. Toàn bộ Server đồ án đã lên sóng Live ở Domain chính thức: **`nttspace.online`**.
+- **Nginx Reverse Proxy:** Định tuyến trực tiếp luồng truy cập trên mạng lưới Public vào sâu trong Docker Hub container. Toàn bộ Server hệ thống bài thi đã lên sóng Live ở Domain chính thức: **`nttspace.online`**.
 
 **2. System Demo - X-AURUM SWAGGER UI:**
 - Mở Server truy cập trực tiếp vào giao diện OpenAPI (`/swagger`).
