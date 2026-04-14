@@ -1,0 +1,20 @@
+# ==========================================
+# REVERSE PROXY CONFIGURATION (CADDY)
+# ==========================================
+# Caddy là công nghệ Web Server đời mới, thay thế Nginx cực tốt vì nó
+# TỰ ĐỘNG phát hành và gia hạn chứng chỉ SSL quốc tế (HTTPS) mà bạn không cần cấu hình.
+# 
+# Hướng dẫn chạy bằng Docker Compose:
+# 1. Trỏ DNS Domain `nttspace.site` của bạn về IP của Server VPS.
+# 2. Cài đặt Caddy hoặc dán đoạn code này vào file `Caddyfile` trên Server.
+# 3. Chạy lệnh: caddy start
+
+nttspace.site, www.nttspace.site {
+    # Tự động điều hướng Traffic sang ASP.NET Minimal API
+    reverse_proxy localhost:5235 {
+        header_up X-Real-IP {remote}
+    }
+
+    # Bật nén file tĩnh (tương tự gzip)
+    encode gzip zstd
+}
