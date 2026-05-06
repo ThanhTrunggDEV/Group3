@@ -1,0 +1,293 @@
+%% CHAPTER 3: SYSTEM DESIGN AND ARCHITECTURE
+\section{CHAPTER 3: SYSTEM DESIGN AND ARCHITECTURE}
+
+\subsection{3.1. Overall System Architecture}
+
+X-AURUM is designed around a \textbf{decoupled, three-tier architecture} that separates the concerns of data acquisition, model intelligence, and service delivery into independent, testable modules. This separation ensures that each tier can evolve independently: the ML model can be retrained and updated without modifying the API server; the API server can be scaled horizontally without touching the training pipeline; and the data collection script can be swapped for a different data provider without affecting upstream components.
+
+The four principal components and their interactions are:
+
+\begin{enumerate}
+  \item \textbf{Data Collection} (\texttt{download\_data.py}): A Python script that interfaces with the Binance Public REST API to harvest historical PAXG/USDT candlestick data and persist it as a CSV file. This component runs once (or periodically, on a schedule) and has no runtime dependency on the other components.
+
+  \item \textbf{AI Training Engine} (\texttt{GoldPrice\_CLI}): A C\#/.NET 10 console application that implements the complete ML.NET training pipeline. It reads the CSV, trains a LightGBM regression model, evaluates it on a held-out test set, and serialises the trained model pipeline as \texttt{GoldModel.zip}. This component is also run offline (not during API serving).
+
+  \item \textbf{API Server} (\texttt{GoldPrice\_API}): An ASP.NET Core Minimal API application that loads \texttt{GoldModel.zip} at startup, hosts the prediction REST endpoints, and integrates live market data from external APIs. This is the online, user-facing component.
+
+  \item \textbf{Web Interface} (\texttt{wwwroot/index.html}): A static single-page application served directly by the ASP.NET Core static files middleware. It communicates with the API server via fetch() calls from the browser.
+\end{enumerate}
+
+The full system data flow is summarised as:
+\[
+\begin{aligned}
+&\underbrace{\text{Binance API}}_{\text{Source}} \xrightarrow{\text{Python scraper}} \underbrace{\texttt{NEW\_GOLD.csv}}_{\text{Dataset}} \xrightarrow{\text{ML.NET}} \underbrace{\texttt{GoldModel.zip}}_{\text{Model}} \\
+&\xrightarrow{\text{ASP.NET loads}} \underbrace{\text{REST API}}_{\text{Service}} \xleftarrow{\text{HTTP fetch}} \underbrace{\texttt{index.html}}_{\text{UI}}
+\end{aligned}
+\]
+
+And at runtime (per user request):
+\[
+\begin{aligned}
+&\underbrace{\text{User Browser}}_{\text{Client}} \xrightarrow{\text{HTTP GET /realtime}} \underbrace{\text{API Server}}_{\text{Server}} \xrightarrow{\text{async}} \underbrace{\text{Binance + ER-API}}_{\text{External}} \\
+&\rightarrow \underbrace{\texttt{PredictionEnginePool}}_{\text{Inference}} \rightarrow \underbrace{\text{JSON Response}}_{\text{Result}}
+\end{aligned}
+\]
+
+\subsection{3.2. Directory Structure}
+
+The project repository follows a clean, self-documenting directory structure with a clear separation between the two main application modules:
+
+\begin{lstlisting}[language={}, numbers=none, frame=single, basicstyle=\ttfamily\footnotesize]
+Group3/
+|-- download_data.py            # Data harvesting script (Python)
+|-- NEW_GOLD.csv                # Training dataset (1,000 days OHLCV)
+|-- Dockerfile                  # Multi-stage Docker image definition
+|-- docker-compose.yml          # Local development orchestration
+|-- .github/
+|   `-- workflows/
+|       `-- docker-ci-cd.yml    # GitHub Actions CI/CD pipeline
+|
+|-- GoldPrice_CLI/              # MODULE 1: AI Training Engine
+|   |-- GoldPrice_CLI.csproj    # .NET project file (ML.NET dependencies)
+|   |-- Program.cs              # Main: data load, train, evaluate, REPL
+|   `-- GoldModel.zip           # Output artifact: serialised model
+|
+`-- GoldPrice_API/              # MODULE 2: REST API Server
+    |-- GoldPrice_API.csproj    # .NET project file (ASP.NET Core deps)
+    |-- Program.cs              # Application bootstrap & middleware pipeline
+    |-- Endpoints/
+    |   `-- PredictionEndpoints.cs  # Route handlers (MapGet, MapPost)
+    |-- Extensions/
+    |   `-- ServiceExtensions.cs    # DI: PredictionEnginePool, RateLimiter
+    |-- Models/
+    |   `-- GoldPriceModels.cs      # ModelInput / ModelOutput record types
+    `-- wwwroot/
+        `-- index.html              # Frontend SPA (HTML + CSS + JS)
+\end{lstlisting}
+
+\subsubsection{3.2.1. Project File Configuration}
+The \texttt{GoldPrice\_CLI.csproj} project file references the following NuGet packages:
+
+\begin{itemize}
+  \item \texttt{Microsoft.ML} (v3.0): The core ML.NET package providing \texttt{MLContext} and all pipeline primitives.
+  \item \texttt{Microsoft.ML.LightGbm} (v3.0): The LightGBM trainer integration, wrapping the native \texttt{lightgbm.dll} binary.
+\end{itemize}
+
+The \texttt{GoldPrice\_API.csproj} references:
+\begin{itemize}
+  \item \texttt{Microsoft.ML} + \texttt{Microsoft.ML.LightGbm}: For model loading (the same packages used for training).
+  \item \texttt{Microsoft.Extensions.ML} (v3.0): Provides the \texttt{PredictionEnginePool} DI integration and the \texttt{AddPredictionEnginePool()} extension method.
+  \item \texttt{Swashbuckle.AspNetCore}: For Swagger/OpenAPI documentation generation.
+\end{itemize}
+
+\subsection{3.3. Data Flow Pipeline}
+
+The complete end-to-end data lifecycle in X-AURUM proceeds through four distinct stages:
+
+\subsubsection{Stage 1: Data Harvesting}
+The Python script \texttt{download\_data.py} makes a single HTTP GET request to the Binance Klines API:
+
+\begin{center}
+\texttt{GET https://api.binance.com/api/v3/klines}\\
+\texttt{?symbol=PAXGUSDT\&interval=1d\&limit=1000}
+\end{center}
+
+
+Binance returns a JSON array of 1,000 arrays, each representing one daily candlestick with 12 fields (open time, open, high, low, close, volume, close time, quote asset volume, number of trades, taker buy base asset volume, taker buy quote asset volume, and an ignore field). The script iterates over this array, extracts the relevant fields, and writes them to \texttt{NEW\_GOLD.csv} with a descriptive header row. The resulting file is approximately 95 KB and constitutes the complete training dataset.
+
+\subsubsection{Stage 2: Model Training and Evaluation}
+\texttt{GoldPrice\_CLI} performs the following sequence:
+
+\begin{enumerate}
+  \item \textbf{Locate dataset}: The program first checks for \texttt{NEW\_GOLD.csv} in the parent directory of the current working directory. If not found, it falls back to a hardcoded absolute path (\texttt{D:\textbackslash Coding Space\textbackslash Project\textbackslash Group3\textbackslash NEW\_GOLD.csv}).
+  \item \textbf{Load data}: \texttt{MLContext.Data.LoadFromTextFile<ModelInput>} parses the CSV into an \texttt{IDataView}, mapping column indices to the typed \texttt{ModelInput} schema.
+  \item \textbf{Split}: \texttt{TrainTestSplit(dataView, testFraction: 0.2)} produces an 800-sample training set and a 200-sample test set, sampled randomly with seed 42.
+  \item \textbf{Build pipeline}: Constructs the feature concatenation + LightGBM trainer pipeline.
+  \item \textbf{Train}: \texttt{pipeline.Fit(trainSet)} executes LightGBM for 1,000 boosting iterations.
+  \item \textbf{Save model}: The fitted \texttt{ITransformer} is serialised to \texttt{GoldModel.zip}.
+  \item \textbf{Evaluate}: The model is applied to the test set via \texttt{model.Transform(testSet)}, and \texttt{Regression.Evaluate} computes R\textsuperscript{2}, MAE, and RMSE.
+  \item \textbf{Interactive mode}: The CLI enters a REPL loop allowing manual prediction from the command line.
+\end{enumerate}
+
+\subsubsection{Stage 3: API Serving (Application Startup)}
+When \texttt{GoldPrice\_API} starts, the \texttt{WebApplication.CreateBuilder} initialises the dependency injection container. The \texttt{AddGoldPriceModel()} extension method resolves the path to \texttt{GoldModel.zip} and registers the \texttt{PredictionEnginePool} with the DI container. This triggers the immediate loading and deserialization of the model into memory at startup, ensuring that the first user request is served without any cold-start model loading delay.
+
+\subsubsection{Stage 4: Live Automation (Per-Request Runtime)}
+When a client calls \texttt{GET /api/v1/predictions/realtime}, the following sequence executes within a single asynchronous request handler:
+
+\begin{enumerate}
+  \item \textbf{Fetch OHLCV}: The handler uses \texttt{IHttpClientFactory} to create an \texttt{HttpClient} and calls the Binance Klines API with \texttt{limit=1} to get today's single candlestick.
+  \item \textbf{Parse OHLCV}: The JSON array response is parsed using \texttt{System.Text.Json.JsonDocument} (zero-allocation JSON API). The Open, High, Low, and Volume fields are extracted and parsed as \texttt{float} values.
+  \item \textbf{Fetch exchange rate}: A second \texttt{HttpClient} call retrieves the USD/VND exchange rate from \texttt{open.er-api.com}.
+  \item \textbf{Run inference}: A \texttt{ModelInput} struct is populated with the live market data and passed to \texttt{PredictionEnginePool.Predict("GoldModel", input)}.
+  \item \textbf{Build and return response}: The predicted Close in USD is multiplied by the VND exchange rate to produce the VND prediction. Both values, along with the live market inputs and exchange rate, are returned as a JSON object with HTTP 200.
+\end{enumerate}
+
+The entire handler is \texttt{async/await}-based, ensuring that no threads are blocked during the external HTTP calls.
+
+\subsection{3.4. RESTful API Specification}
+
+\subsubsection{3.4.1. API Versioning and Base URL}
+All endpoints are versioned under \texttt{/api/v1/} and grouped as \texttt{/api/v1/predictions}. Version prefixing in the URL path follows common REST API design convention and allows future introduction of \texttt{/api/v2/} endpoints without breaking existing clients.
+
+\subsubsection{3.4.2. Endpoint Specifications}
+
+\textbf{Endpoint 1: Automated Realtime Prediction}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Method} & GET\\
+\textbf{Route} & \texttt{/api/v1/predictions/realtime}\\
+\textbf{Auth} & None (public)\\
+\textbf{Rate Limit} & 5 requests / 10 seconds\\
+\textbf{Success} & HTTP 200 OK\\
+\textbf{Server Error} & HTTP 500 Internal Server Error (if Binance API unavailable)\\
+\textbf{Rate Limited} & HTTP 429 Too Many Requests\\
+\hline
+\end{tabular}
+\end{center}
+
+Success Response Body (HTTP 200):
+\begin{lstlisting}[language=json, numbers=none]
+{
+  "success": true,
+  "data": {
+    "inputsUsed": {
+      "open": 3241.20,
+      "high": 3265.50,
+      "low": 3215.00,
+      "volume": 8420.31
+    },
+    "predictedClose": 3255.80,
+    "predictedCloseVnd": 84650800.00,
+    "liveWorldPrice": 3241.20,
+    "exchangeRateVnd": 26000.0
+  }
+}
+\end{lstlisting}
+
+\textbf{Endpoint 2: Manual OHLCV Prediction}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Method} & POST\\
+\textbf{Route} & \texttt{/api/v1/predictions}\\
+\textbf{Content-Type} & \texttt{application/json}\\
+\textbf{Auth} & None (public)\\
+\textbf{Rate Limit} & 5 requests / 10 seconds\\
+\textbf{Success} & HTTP 200 OK\\
+\textbf{Rate Limited} & HTTP 429 Too Many Requests\\
+\hline
+\end{tabular}
+\end{center}
+
+Request Body:
+\begin{lstlisting}[language=json, numbers=none]
+{
+  "open": 1800.0,
+  "high": 1820.0,
+  "low": 1790.0,
+  "volume": 200500.0
+}
+\end{lstlisting}
+
+Success Response Body (HTTP 200):
+\begin{lstlisting}[language=json, numbers=none]
+{
+  "success": true,
+  "data": {
+    "predictedClose": 1810.45,
+    "predictedCloseVnd": 47071700.0,
+    "liveWorldPrice": 3241.20,
+    "exchangeRateVnd": 26000.0
+  }
+}
+\end{lstlisting}
+
+\subsubsection{3.4.3. Error Handling}
+The API implements two levels of error handling:
+
+\begin{itemize}
+  \item \textbf{External API failure (realtime endpoint)}: If the Binance API call fails (network error, timeout, or non-2xx response), the \texttt{try/catch} block around the external calls catches the exception and returns HTTP 500. This prevents the API from silently returning a prediction based on empty/zero inputs.
+  \item \textbf{Exchange rate API failure (both endpoints)}: If the exchange rate API fails, the system falls back to a hardcoded VND rate of 25,000 VND/USD. The prediction is still returned (with HTTP 200), but the \texttt{exchangeRateVnd} field in the response will reflect the fallback value. This ``graceful degradation'' ensures the core prediction functionality remains available even when the currency API experiences outages.
+\end{itemize}
+
+\subsection{3.5. Security Design}
+
+\subsubsection{3.5.1. Rate Limiting}
+As described in Chapter 2, the Fixed Window Rate Limiter is applied to both prediction endpoints via \texttt{.RequireRateLimiting("fixed")}. This prevents Denial of Service (DoS) attacks and excessive API consumption.
+
+\subsubsection{3.5.2. CORS Policy}
+Cross-Origin Resource Sharing (CORS) is configured with an \texttt{"AllowAll"} policy:
+\begin{lstlisting}
+builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+\end{lstlisting}
+This permissive policy is intentional for an academic demonstration system where the frontend (served from the same origin) and potential external testers need unrestricted access. A production deployment would restrict \texttt{AllowedOrigins} to specific trusted domains.
+
+\subsubsection{3.5.3. Input Validation}
+The \texttt{ModelInput} class uses \texttt{float} typed properties. ASP.NET Core's built-in model binding will reject POST requests with non-numeric OHLCV fields with a HTTP 400 Bad Request response, providing implicit input validation.
+
+\subsection{3.6. DevOps Architecture}
+
+\subsubsection{3.6.1. Multi-Stage Dockerfile}
+The \texttt{Dockerfile} in the repository root implements a two-stage build targeting \texttt{GoldPrice\_API}:
+
+\begin{enumerate}
+  \item \textbf{Build Stage} (\texttt{FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build}):
+  \begin{itemize}
+    \item Sets the working directory to \texttt{/app}.
+    \item Copies \texttt{*.csproj} files and runs \texttt{dotnet restore} to cache NuGet package restoration as a Docker layer.
+    \item Copies the full source and runs \texttt{dotnet publish -c Release -o /app/publish}.
+    \item Copies the \texttt{GoldModel.zip} artifact into the publish directory.
+  \end{itemize}
+  \item \textbf{Runtime Stage} (\texttt{FROM mcr.microsoft.com/dotnet/aspnet:10.0}):
+  \begin{itemize}
+    \item Sets the working directory to \texttt{/app}.
+    \item Copies \texttt{/app/publish} from the build stage.
+    \item Sets environment variables (\texttt{ASPNETCORE\_URLS=http://+:8080}).
+    \item Exposes port 8080 and defines the entrypoint as \texttt{GoldPrice\_API.dll}.
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{3.6.2. GitHub Actions Workflow}
+The CI/CD workflow file \texttt{.github/workflows/docker-ci-cd.yml} defines the automated build-and-publish pipeline:
+
+\begin{lstlisting}[language={}, numbers=none]
+name: Build and Push Docker Image
+on:
+  push:
+    branches: [main]
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/thanhtrunggdev/group3:latest
+\end{lstlisting}
+
+\subsubsection{3.6.3. Production Deployment}
+The complete production deployment on a clean Linux VPS requires a single terminal command:
+
+\begin{lstlisting}[language={}, numbers=none]
+sudo docker run -d --name goldprice_api \
+  --restart unless-stopped \
+  --pull always \
+  -p 5235:8080 \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  -e ASPNETCORE_URLS="http://+:8080" \
+  ghcr.io/thanhtrunggdev/group3:latest
+\end{lstlisting}
+
+The \texttt{--restart unless-stopped} flag ensures the container automatically restarts after VPS reboots or unexpected crashes. The \texttt{--pull always} flag ensures the latest GHCR image is always used, enabling zero-downtime rolling deployments.
+
+\newpage

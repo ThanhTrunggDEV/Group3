@@ -1,0 +1,11 @@
+{
+  "owner": "bg1avd",
+  "slug": "latex-verbatim-center",
+  "displayName": "Latex Verbatim Center",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1775270451632,
+    "commit": "https://github.com/openclaw/skills/commit/c7739659f08db42d7602abaef5e1df629233a120"
+  },
+  "history": []
+}

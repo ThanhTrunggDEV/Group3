@@ -1,0 +1,27 @@
+{
+  "owner": "easonc13",
+  "slug": "overleaf",
+  "displayName": "Overleaf",
+  "latest": {
+    "version": "1.2.0",
+    "publishedAt": 1773600255037,
+    "commit": "https://github.com/openclaw/skills/commit/4a717690e644612e9a00a45f73a657bb3f02aad9"
+  },
+  "history": [
+    {
+      "version": "1.1.1",
+      "publishedAt": 1771173471350,
+      "commit": "https://github.com/openclaw/skills/commit/0b9eb42e3cd92bcb6901ee7fd7eec30ca81863c3"
+    },
+    {
+      "version": "1.0.2",
+      "publishedAt": 1770472615660,
+      "commit": "https://github.com/openclaw/skills/commit/6d31f7bf5432fe9782e1989faecf53760109b2d9"
+    },
+    {
+      "version": "1.0.0",
+      "publishedAt": 1770271028560,
+      "commit": "https://github.com/clawdbot/skills/commit/779397937088365a6ee42dff2c2ace52684be4ef"
+    }
+  ]
+}

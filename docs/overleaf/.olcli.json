@@ -1,0 +1,31 @@
+{
+  "projectId": "69fb638c1099f34ba1d3d232",
+  "projectName": "bao cao mon thay Vinh",
+  "lastPull": "2026-05-06T16:02:20.403Z",
+  "remoteManifest": [
+    "main.tex",
+    "ch1.tex",
+    "ch2.tex",
+    "ch3.tex",
+    "ch4.tex",
+    "ch5.tex",
+    "conclusion.tex",
+    "references.tex",
+    "nhanxet.tex",
+    "eval_metrics.py",
+    "logo_ictu.png",
+    "pipeline.png",
+    "loss_curve.png",
+    "pipeline_training.png",
+    "stable-diffusion-3.jpg",
+    "pipeline_inference.png",
+    "controlnet_arch.png",
+    "baseline_prompt1.png",
+    "baseline_prompt0.png",
+    "lora_step3500_prompt1.png",
+    "before.jpg",
+    "after.png",
+    "lora_step12000_prompt0.png"
+  ],
+  "lastPush": "2026-05-06T16:48:35.414Z"
+}

@@ -1,0 +1,11 @@
+{
+  "owner": "huaruoji",
+  "slug": "md2pdf-xelatex",
+  "displayName": "md2pdf-xelatex",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1771665398556,
+    "commit": "https://github.com/openclaw/skills/commit/1b2609cc41e2acbfc7aaa8bcdc03c3acf7a61c04"
+  },
+  "history": []
+}

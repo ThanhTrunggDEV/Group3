@@ -1,0 +1,44 @@
+%% CONCLUSION
+\section*{CONCLUSION}
+\addcontentsline{toc}{section}{Conclusion}
+
+This report has presented the design, implementation, and evaluation of \textbf{X-AURUM} --- a complete, end-to-end Gold Price Forecasting System developed as the Group 3 project for the Application Development Technology course.
+
+\subsection*{Summary of Achievements}
+
+The team successfully delivered all six stated objectives:
+
+\begin{enumerate}
+  \item \textbf{Automated Data Pipeline}: A Python scraper automatically harvests 1,000 days of real PAXG/USDT OHLCV data from the Binance public API, producing a high-quality, market-authentic training dataset.
+
+  \item \textbf{High-Accuracy ML Model}: The LightGBM regression model trained via ML.NET achieves an R\textsuperscript{2} of approximately 0.99 on the held-out test set, with a Mean Absolute Error well under \$10 per troy ounce.
+
+  \item \textbf{Production-Quality REST API}: The ASP.NET Core Minimal API exposes two prediction endpoints --- a fully automated realtime endpoint and a manual prediction endpoint --- both protected by a Fixed Window Rate Limiter and documented via Swagger/OpenAPI.
+
+  \item \textbf{Live Market Integration}: The realtime endpoint autonomously fetches current gold prices from Binance and USD/VND exchange rates from the Exchange Rate API, delivering predictions in both currencies without any user interaction.
+
+  \item \textbf{Glassmorphism Web Frontend}: A zero-click, self-updating web dashboard was built and deployed as a static SPA served directly by the API server, displaying live gold price predictions in both USD and VND upon page load.
+
+  \item \textbf{DevOps and Containerisation}: A multi-stage Dockerfile and GitHub Actions CI/CD pipeline automate the entire build-and-deploy cycle. The production image is published to GHCR and can be deployed on any Linux VPS with a single \texttt{docker run} command.
+\end{enumerate}
+
+
+\subsection*{Limitations and Future Work}
+
+While X-AURUM represents a fully functional production system, several directions remain open for future development:
+
+\begin{itemize}
+  \item \textbf{Multi-step ahead forecasting}: The current model predicts the same-day Close from the same-day OHLCV. Extending to a lagged time-series approach (e.g., predicting tomorrow's Close from today's data) would provide genuine forward-looking forecasting capability.
+
+  \item \textbf{Incorporating macroeconomic features}: Adding external indicators such as the US Dollar Index (DXY), the Consumer Price Index (CPI), Federal Reserve interest rate decisions, and geopolitical risk indices would likely improve predictive accuracy for longer-horizon forecasts.
+
+  \item \textbf{Model monitoring and retraining}: The current system has no automated mechanism to detect model drift as market conditions evolve. Implementing a scheduled retraining job and drift detection would ensure sustained accuracy in production.
+
+  \item \textbf{Advanced model architectures}: Exploring deep learning approaches --- such as LSTM (Long Short-Term Memory) networks or Transformer-based time-series models (e.g., Temporal Fusion Transformer) --- could capture longer-range temporal dependencies in gold price movements.
+
+  \item \textbf{User authentication and personalisation}: Adding API key authentication would allow the system to track usage per user and provide personalised dashboards and price alert notifications.
+\end{itemize}
+
+X-AURUM demonstrates that a small, focused team equipped with modern tooling (ML.NET, ASP.NET Core, Docker, GitHub Actions) can deliver a complete, enterprise-grade machine learning application within a single academic semester. The project serves as a practical template for real-world financial AI system development.
+
+\newpage

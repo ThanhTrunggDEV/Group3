@@ -1,0 +1,251 @@
+%% CHAPTER 2: THEORETICAL BACKGROUND
+\section{CHAPTER 2: THEORETICAL BACKGROUND}
+
+\subsection{2.1. Financial Time-Series and OHLCV Data}
+
+\subsubsection{2.1.1. Candlestick Representation}
+In financial markets, the price activity of a traded asset over a given time period is compactly represented using the \textbf{OHLCV candlestick format}. Each candlestick record encodes five values:
+
+\begin{itemize}
+  \item \textbf{Open} ($O_t$): The transaction price at the very first trade executed during period $t$.
+  \item \textbf{High} ($H_t$): The maximum transaction price recorded during period $t$.
+  \item \textbf{Low} ($L_t$): The minimum transaction price recorded during period $t$.
+  \item \textbf{Close} ($C_t$): The transaction price of the last trade executed during period $t$. This is considered the most important price level and is the primary target for prediction models.
+  \item \textbf{Volume} ($V_t$): The total quantity of the asset exchanged during period $t$.
+\end{itemize}
+
+The OHLCV representation satisfies the constraint $L_t \leq O_t \leq H_t$ and $L_t \leq C_t \leq H_t$ by construction --- the Open and Close prices must always fall within the High-Low price range. This structural constraint is exploited by machine learning regressors: given a day's High and Low prices, the Close price is already bounded within a known range, making same-day prediction considerably more tractable than genuine future-price extrapolation.
+
+\subsubsection{2.1.2. PAX Gold (PAXG) as a Data Source}
+Traditional gold price data is obtained through expensive Bloomberg or Reuters data subscriptions. X-AURUM exploits an alternative: \textbf{PAX Gold (PAXG)}, a regulated gold-backed token issued by Paxos Trust Company (licensed under the New York State Department of Financial Services). Each PAXG token is backed by exactly one fine troy ounce of London Bullion Market Association (LBMA)-accredited gold stored in Brink's vaults in London.
+
+The PAXG/USDT trading pair on Binance provides several advantages over traditional gold data sources:
+\begin{itemize}
+  \item \textbf{Zero cost}: The Binance Public API is free and requires no authentication for market data endpoints.
+  \item \textbf{High frequency}: Data is available at 1-minute to 1-month granularity, with millisecond-precision timestamps.
+  \item \textbf{LBMA parity}: PAXG/USD tracks the physical London PM Gold Fix with high fidelity, making it an accurate proxy for the traditional gold spot price.
+  \item \textbf{Programmatic access}: Standard REST API with JSON responses eliminates the need for proprietary data format parsers.
+\end{itemize}
+
+\subsubsection{2.1.3. Stationarity and Financial Data Challenges}
+Financial time series present several statistical challenges for machine learning models:
+
+\begin{itemize}
+  \item \textbf{Non-stationarity}: Gold prices exhibit strong upward trends and structural breaks (regime changes), violating the stationarity assumption required by many classical statistical models.
+  \item \textbf{Autocorrelation}: Adjacent price observations are correlated, meaning observations in the training set are not independently and identically distributed (i.i.d.).
+  \item \textbf{Heteroskedasticity}: Price volatility is itself time-varying (higher during market stress periods), making fixed-variance assumptions incorrect.
+  \item \textbf{Fat tails}: Gold price returns exhibit leptokurtic distributions with heavier tails than a Gaussian, meaning extreme price moves occur more frequently than standard models predict.
+\end{itemize}
+
+LightGBM's non-parametric, tree-based nature makes it inherently robust to these issues: it does not assume Gaussian error distributions, does not require stationarity, and can accommodate non-linear relationships and heteroskedastic residuals naturally through its ensemble structure.
+
+\subsection{2.2. Ensemble Learning and Gradient Boosting}
+
+\subsubsection{2.2.1. Ensemble Methods Overview}
+Ensemble learning combines the predictions of multiple base learners (``weak learners'') to produce a stronger aggregate predictor. The two primary ensemble paradigms are:
+
+\begin{itemize}
+  \item \textbf{Bagging (Bootstrap Aggregating)}: Trains multiple base learners in parallel on different bootstrap samples of the training data and averages their predictions. Random Forest is the canonical bagging algorithm.
+  \item \textbf{Boosting}: Trains base learners \textit{sequentially}, with each new learner focusing on the residual errors of the ensemble so far. Gradient Boosting is the most widely adopted boosting algorithm for structured data.
+\end{itemize}
+
+\subsubsection{2.2.2. Gradient Boosted Decision Trees (GBDT)}
+\textbf{Gradient Boosting} was formalised by Friedman (2001) as a numerical optimisation algorithm in function space. Given a loss function $\mathcal{L}(y, F(x))$, the algorithm builds an additive model:
+
+\[
+F_M(x) = F_0(x) + \sum_{m=1}^{M} \eta \cdot h_m(x)
+\]
+
+where $F_0(x)$ is an initial constant prediction (typically the mean of $y$), $h_m(x)$ is the $m$-th weak learner (a decision tree fitted to the negative gradient of the loss), $\eta$ is the learning rate (shrinkage), and $M$ is the total number of iterations (trees).
+
+At each boosting step $m$, the negative gradient (``pseudo-residual'') is computed:
+\[
+r_{im} = -\left[\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\right]_{F=F_{m-1}}
+\]
+
+A regression tree $h_m$ is then fitted to these pseudo-residuals. For the Mean Squared Error (MSE) loss $\mathcal{L} = \frac{1}{2}(y - F(x))^2$, the pseudo-residuals simplify to the ordinary residuals: $r_{im} = y_i - F_{m-1}(x_i)$.
+
+\subsubsection{2.2.3. Decision Tree Base Learners}
+Each base learner $h_m$ in X-AURUM is a \textbf{regression decision tree} grown on the pseudo-residuals. A decision tree recursively partitions the feature space using axis-aligned splits:
+\[
+\text{Node split: } x_j \leq s \quad \text{or} \quad x_j > s
+\]
+where $j \in \{1, 2, 3, 4\}$ indexes the feature (Open, High, Low, Volume) and $s$ is the split threshold chosen to minimise the residual sum of squares within each resulting leaf. The leaf value for a leaf $\ell$ is:
+\[
+\gamma_\ell = \arg\min_\gamma \sum_{i \in \text{leaf}_\ell} \mathcal{L}(y_i, F_{m-1}(x_i) + \gamma)
+\]
+
+\subsection{2.3. LightGBM Algorithm}
+
+\textbf{LightGBM} (Light Gradient Boosting Machine) is an open-source GBDT framework developed by Microsoft Research (Ke et al., 2017) designed to address the computational bottleneck of traditional GBDT implementations on large-scale datasets. LightGBM introduces three key innovations over XGBoost and classical GBDT:
+
+\subsubsection{2.3.1. Gradient-Based One-Side Sampling (GOSS)}
+Traditional GBDT uses all $n$ training samples for finding the optimal split at each tree node, which is computationally expensive when $n$ is large. GOSS observes that samples with larger absolute gradient values contribute more information to the loss reduction and should be prioritised.
+
+GOSS retains all $a \cdot n$ samples with the largest absolute gradients (``hard instances'') and randomly samples a fraction $b$ of the remaining samples (``easy instances''), applying a multiplying factor $(1-a)/b$ to the gradients of the sampled easy instances to correct for the introduced bias. This reduces computation from $O(n)$ to $O((a+b) \cdot n)$ per split while maintaining competitive accuracy.
+
+\subsubsection{2.3.2. Exclusive Feature Bundling (EFB)}
+In high-dimensional feature spaces, many features are \textit{mutually exclusive} --- they are rarely non-zero simultaneously (a common occurrence in one-hot encoded categorical data or sparse feature matrices). EFB bundles such mutually exclusive features into a single feature, reducing the effective feature dimensionality from $d$ to a much smaller number $k \ll d$ without any information loss.
+
+For X-AURUM's four-dimensional feature space (Open, High, Low, Volume), EFB provides minimal benefit since the feature space is already dense and low-dimensional. However, it demonstrates LightGBM's design for generality across diverse problem settings.
+
+\subsubsection{2.3.3. Leaf-Wise (Best-First) Tree Growth}
+Traditional GBDT implementations use \textbf{level-wise} tree growth: all leaves at depth $d$ are expanded before proceeding to depth $d+1$. This results in balanced trees but many unnecessary splits (expanding leaf nodes that contribute little to loss reduction).
+
+LightGBM uses \textbf{leaf-wise} (best-first) growth: at each step, the single leaf with the greatest loss-reduction potential (regardless of depth) is split. This produces asymmetric, deeper trees that achieve the same number of leaves with higher accuracy for the same computational budget. A \texttt{max\_depth} parameter prevents excessive tree depth that could lead to overfitting.
+
+The comparison between level-wise and leaf-wise growth for a budget of 4 splits is illustrated conceptually:
+
+\begin{itemize}
+  \item \textbf{Level-wise}: All nodes at depth 1 are split first (2 splits), then depth 2 (2 splits). Result: a balanced binary tree of depth 2.
+  \item \textbf{Leaf-wise}: The single best leaf is selected at each step. Result: a potentially unbalanced tree that targets the highest-error regions of the feature space first.
+\end{itemize}
+
+\subsubsection{2.3.4. Histogram-Based Split Finding}
+LightGBM builds histograms of feature values rather than sorting individual values for split finding. Each continuous feature is discretised into at most $K$ bins (default $K=255$). Split finding then requires scanning $K$ bin boundaries rather than $n$ individual values, reducing split-finding complexity from $O(n \cdot d)$ to $O(K \cdot d)$ per tree node. For X-AURUM with $n=800$ training samples and $d=4$ features, this optimisation is marginal, but it becomes critical for larger datasets.
+
+\subsubsection{2.3.5. Hyperparameter Configuration in X-AURUM}
+
+\begin{center}
+\begin{tabular}{|p{4.5cm}|l|p{6.5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Rationale}\\
+\hline
+\texttt{numberOfIterations} & 1,000 & Sufficient boosting rounds for convergence on 800 training samples\\
+\texttt{learningRate} & 0.005 & Low learning rate with high iterations prevents overfitting via shrinkage\\
+\texttt{seed} (MLContext) & 42 & Ensures fully reproducible training results across runs\\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{2.4. ML.NET Framework}
+
+\textbf{ML.NET} is Microsoft's open-source, cross-platform machine learning framework for .NET applications, first released in 2018 and reaching production maturity in v1.0. It provides a pipeline-based API for the complete ML workflow: data loading, schema binding, feature engineering, model training, evaluation, serialisation, and serving.
+
+\subsubsection{2.4.1. Data Loading and Schema Binding}
+ML.NET uses strongly-typed C\# classes with \texttt{[LoadColumn(index)]} attributes to map CSV column indices to class properties at compile time. The \texttt{MLContext.Data.LoadFromTextFile<T>} method returns an \texttt{IDataView} --- a lazy-evaluated, schema-aware data abstraction that supports deferred computation and memory-efficient streaming of large datasets.
+
+\subsubsection{2.4.2. Pipeline Composition}
+The ML.NET pipeline is composed of a sequence of \textit{transformers} and a \textit{trainer} using the fluent \texttt{.Append()} API:
+\begin{enumerate}
+  \item \textbf{Estimators} (transformers): Stateless or fit-able data transformations (e.g., \texttt{Concatenate}, \texttt{NormalizeMinMax}).
+  \item \textbf{Trainers}: Algorithms that fit a model to training data (e.g., \texttt{LightGbm}, \texttt{Sdca}, \texttt{FastTree}).
+\end{enumerate}
+
+Calling \texttt{pipeline.Fit(trainData)} executes the entire pipeline end-to-end, returning a fitted \texttt{ITransformer} that encapsulates all learned parameters.
+
+\subsubsection{2.4.3. Model Evaluation}
+ML.NET's \texttt{RegressionMetrics} object provides all standard regression evaluation statistics. The three metrics used in X-AURUM are:
+
+\begin{itemize}
+  \item \textbf{R-Squared (R\textsuperscript{2})}: Also called the coefficient of determination. Ranges from $-\infty$ to 1.0, where 1.0 indicates perfect prediction and 0.0 indicates the model performs no better than predicting the mean.
+  \item \textbf{Mean Absolute Error (MAE)}: The average of the absolute prediction errors across all test samples, expressed in USD per troy ounce. MAE is interpretable and robust to outliers.
+  \item \textbf{Root Mean Squared Error (RMSE)}: The square root of the mean squared error. RMSE penalises large individual errors more heavily than MAE and is expressed in the same units (USD per troy ounce).
+\end{itemize}
+
+\subsubsection{2.4.4. PredictionEnginePool for Web API Serving}
+For production API deployment, ML.NET provides \texttt{PredictionEnginePool<TInput, TOutput>}: a thread-safe, object-pooled factory of \texttt{PredictionEngine<T>} instances. This is essential because the base \texttt{PredictionEngine<T>} is \textbf{not thread-safe} --- using a single instance in a concurrent ASP.NET Core request pipeline would cause race conditions.
+
+\texttt{PredictionEnginePool} solves this by maintaining a pool of pre-warmed engine instances, allocating one per request from the pool, and returning it after use. This eliminates serialisation overhead under load and supports the concurrency demands of a production web service. The \texttt{watchForChanges: true} option additionally enables hot-reload of the model file (GoldModel.zip) without server restart.
+
+\subsection{2.5. ASP.NET Core Minimal API}
+
+\textbf{ASP.NET Core Minimal API} was introduced in .NET 6 as a lightweight alternative to the traditional Model-View-Controller (MVC) architecture for building HTTP APIs. In .NET 10, Minimal API has matured into a first-class, production-ready pattern with full support for OpenAPI/Swagger, route grouping, middleware composition, and dependency injection.
+
+\subsubsection{2.5.1. Comparison with MVC}
+Traditional ASP.NET Core MVC requires creating Controller classes inheriting from \texttt{ControllerBase}, annotating action methods with \texttt{[HttpGet]}/\texttt{[HttpPost]} attributes, and configuring routes via convention-based routing. This introduces significant boilerplate code and increases project startup time.
+
+Minimal API replaces this with direct route-to-delegate mapping:
+\begin{lstlisting}
+// MVC (verbose)
+[ApiController, Route("[controller]")]
+public class PredictionsController : ControllerBase {
+    [HttpGet("realtime")]
+    public IActionResult GetRealtime() { ... }
+}
+
+// Minimal API (concise)
+app.MapGet("/api/v1/predictions/realtime", async (...) => { ... });
+\end{lstlisting}
+
+\subsubsection{2.5.2. Route Grouping and Tags}
+X-AURUM uses \texttt{app.MapGroup("/api/v1/predictions").WithTags("Predictions")} to organise both prediction endpoints under a shared route prefix, ensuring consistent URL structure and grouped Swagger documentation.
+
+\subsubsection{2.5.3. OpenAPI / Swagger Integration}
+The Swagger UI (accessible at \texttt{/swagger}) provides interactive API documentation automatically generated from the route definitions. The \texttt{WithOpenApi()} extension method allows per-endpoint customisation of the operation summary and description shown in the Swagger interface, improving developer experience for API consumers.
+
+\subsection{2.6. API Rate Limiting}
+
+Rate limiting is a critical API security and reliability mechanism. Without it, a single malicious client or a misconfigured consumer could exhaust server resources, causing degraded service for all other clients (Denial of Service).
+
+\subsubsection{2.6.1. Fixed Window Rate Limiter}
+X-AURUM implements the \textbf{Fixed Window} rate limiting algorithm, introduced as a built-in middleware in .NET 7:
+
+\begin{itemize}
+  \item Time is divided into fixed-duration windows (10 seconds in X-AURUM).
+  \item Each window allows up to \texttt{PermitLimit} (5) requests per client.
+  \item When the limit is exceeded, up to \texttt{QueueLimit} (2) additional requests may be queued; all further requests receive an immediate HTTP \texttt{429 Too Many Requests} response.
+  \item At the start of each new window, the request counter resets to zero.
+\end{itemize}
+
+\subsubsection{2.6.2. Sliding Window and Token Bucket Alternatives}
+.NET 7+ also provides \textbf{Sliding Window} (smoother rate distribution within the window) and \textbf{Token Bucket} (allows burst capacity) algorithms. X-AURUM uses Fixed Window for its simplicity and predictability, which is appropriate for an academic demonstration system. Production deployments would typically use Token Bucket to accommodate legitimate burst traffic from interactive users.
+
+\subsection{2.7. Third-Party REST API Integration}
+
+\subsubsection{2.7.1. Binance REST API}
+The Binance Public API is one of the highest-volume and most reliable financial REST APIs globally, serving millions of requests per second across its global edge network. X-AURUM uses two public endpoints, both requiring no API key:
+
+\begin{center}
+\begin{tabular}{|p{5.5cm}|p{8cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Description}\\
+\hline
+\texttt{/api/v3/ticker/price}\newline\texttt{?symbol=PAXGUSDT} & Returns the current spot price of PAXG in USDT as a JSON object with a single \texttt{"price"} field.\\
+\hline
+\texttt{/api/v3/klines}\newline\texttt{?symbol=PAXGUSDT}\newline\texttt{\&interval=1d\&limit=1} & Returns the current day's full candlestick (OHLCV plus metadata) as a JSON array. Used as the automatic input to the realtime prediction endpoint.\\
+\hline
+\end{tabular}
+\end{center}
+
+
+\subsubsection{2.7.2. Exchange Rate API}
+The \textbf{Open Exchange Rates API} (\texttt{open.er-api.com}) provides regularly updated foreign exchange rates sourced from the International Monetary Fund (IMF) and interbank forex markets. X-AURUM calls the \texttt{/v6/latest/USD} endpoint, which returns a JSON object containing exchange rates for all major currencies relative to USD. The \texttt{VND} (Vietnamese Dong) rate is extracted to convert the USD gold price prediction into the local currency for Vietnamese end users.
+
+\subsubsection{2.7.3. \texttt{IHttpClientFactory} and Resilience}
+X-AURUM uses \texttt{IHttpClientFactory} (registered via \texttt{services.AddHttpClient()}) for all outbound HTTP calls. This pattern avoids the \texttt{HttpClient} socket exhaustion problem that arises from instantiating new \texttt{HttpClient} objects per request. The factory manages an internal pool of \texttt{HttpMessageHandler} instances with configurable connection lifetimes.
+
+All external API calls in X-AURUM are wrapped in \texttt{try/catch} blocks with fallback behaviour: if the Binance API call fails, the realtime endpoint returns HTTP 500; if only the exchange rate API fails, the system uses a hardcoded fallback rate of 25,000 VND/USD rather than crashing the entire request.
+
+\subsection{2.8. Docker Containerisation}
+
+\textbf{Docker} is an open-source platform for developing, shipping, and running applications inside lightweight, portable containers. A Docker container packages an application and all its dependencies (runtime, libraries, configuration) into a self-contained unit that runs identically on any host operating system.
+
+\subsubsection{2.8.1. Multi-Stage Dockerfile Pattern}
+A \textbf{multi-stage Dockerfile} uses multiple \texttt{FROM} instructions to define separate build stages. Only the artefacts needed for the final stage are included in the production image, dramatically reducing its size:
+
+\begin{itemize}
+  \item \textbf{Stage 1 (build)}: Uses the full .NET SDK image (\texttt{mcr.microsoft.com/dotnet/sdk:10.0}, $\approx$800 MB). Restores NuGet packages and compiles the C\# project via \texttt{dotnet publish}.
+  \item \textbf{Stage 2 (runtime)}: Uses the minimal .NET ASP.NET runtime image (\texttt{mcr.microsoft.com/dotnet/aspnet:10.0}, $\approx$200 MB). Copies only the compiled \texttt{/publish} directory from Stage 1.
+\end{itemize}
+
+The final production image is approximately 200--250 MB compared to the $\approx$800 MB SDK image --- a 70\% size reduction.
+
+\subsubsection{2.8.2. GitHub Container Registry (GHCR)}
+GHCR is GitHub's built-in Docker image hosting service, tightly integrated with GitHub Actions workflows. Images pushed to GHCR are publicly accessible (or private, for private repositories) at \texttt{ghcr.io/<owner>/<repo>:<tag>}. X-AURUM images are published to \texttt{ghcr.io/thanhtrunggdev/group3:latest} on every push to the \texttt{main} branch.
+
+\subsection{2.9. CI/CD with GitHub Actions}
+
+\textbf{GitHub Actions} is a cloud-native CI/CD automation platform integrated directly into GitHub repositories. Workflows are defined as YAML files in \texttt{.github/workflows/} and are triggered by repository events (push, pull request, scheduled cron, etc.).
+
+The X-AURUM CI/CD pipeline is triggered on every push to \texttt{main} and performs the following steps:
+\begin{enumerate}
+  \item \textbf{Checkout}: Fetches the latest source code.
+  \item \textbf{Authenticate}: Logs into GHCR using a GitHub-managed \texttt{GITHUB\_TOKEN} secret (no manual secret management required).
+  \item \textbf{Build}: Executes the multi-stage Docker build.
+  \item \textbf{Push}: Publishes the built image to GHCR with the \texttt{latest} tag.
+\end{enumerate}
+
+This eliminates all manual build and deployment steps: the only action required from a developer is \texttt{git push origin main}.
+
+\newpage

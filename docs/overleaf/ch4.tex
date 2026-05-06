@@ -1,0 +1,378 @@
+%% CHAPTER 4: IMPLEMENTATION
+\section{CHAPTER 4: IMPLEMENTATION}
+
+\subsection{4.1. Data Collection Module (\texttt{download\_data.py})}
+
+\subsubsection{4.1.1. Overview and Motivation}
+The data collection module is the entry point of the X-AURUM pipeline. Rather than relying on a manually curated or periodically downloaded dataset, the Python script is designed to be re-run at any time to refresh the training data with the most recent market information. This automated harvesting approach ensures the model can be periodically retrained on up-to-date price history as gold market conditions evolve.
+
+The script uses the \texttt{requests} library for HTTP communication and the standard \texttt{csv} module for writing the output file. No additional third-party dependencies are required beyond a standard Python installation.
+
+\subsubsection{4.1.2. Binance API Call Structure}
+The core API call requests the 1,000 most recent daily candlesticks for PAXG/USDT:
+
+\begin{lstlisting}[language=Python]
+import requests, csv
+
+url = "https://api.binance.com/api/v3/klines"
+params = {"symbol": "PAXGUSDT", "interval": "1d", "limit": 1000}
+response = requests.get(url, params=params, timeout=15)
+response.raise_for_status()
+klines = response.json()
+\end{lstlisting}
+
+The Binance API returns each candlestick as a 12-element list. The elements at indices 1--6 correspond to Open, High, Low, Close, Volume, and Close Time respectively. The script writes these to a CSV file with a descriptive header:
+
+\begin{lstlisting}[language=Python]
+header = ["OpenTime", "Open", "High", "Low", "Close",
+          "Volume", "CloseTime", "QuoteVolume", "Trades",
+          "TakerBuyBase", "TakerBuyQuote", "Ignore"]
+
+with open("NEW_GOLD.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(header)
+    for k in klines:
+        writer.writerow(k)
+\end{lstlisting}
+
+\subsubsection{4.1.3. Dataset Characteristics}
+The resulting \texttt{NEW\_GOLD.csv} contains 1,000 rows plus a header, totalling approximately 95 KB. Key statistical properties of the Close price column:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Statistic} & \textbf{Value (approximate)}\\
+\hline
+Count & 1,000 daily records\\
+Date range & May 2023 -- May 2026\\
+Min Close & $\approx$ \$1,800 / oz\\
+Max Close & $\approx$ \$3,400 / oz\\
+Mean Close & $\approx$ \$2,300 / oz\\
+Std. Dev. & $\approx$ \$380 / oz\\
+\hline
+\end{tabular}
+\end{center}
+
+The dataset captures the significant gold bull run of 2024--2026, providing a training distribution that includes both low-volatility consolidation periods and high-volatility rally periods.
+
+\subsection{4.2. ML Training Module (\texttt{GoldPrice\_CLI})}
+
+\subsubsection{4.2.1. Data Model: \texttt{ModelInput} and \texttt{ModelOutput}}
+The ML.NET data model is defined using two simple C\# classes. The \texttt{[LoadColumn(index)]} attribute maps CSV column indices (0-based, accounting for the header row) to class properties:
+
+\begin{lstlisting}
+public class ModelInput
+{
+    [LoadColumn(1)] public float Open   { get; set; }
+    [LoadColumn(2)] public float High   { get; set; }
+    [LoadColumn(3)] public float Low    { get; set; }
+    [LoadColumn(6)] public float Volume { get; set; }
+    
+    [LoadColumn(4), ColumnName("Label")]
+    public float Close { get; set; }
+}
+
+public class ModelOutput
+{
+    [ColumnName("Score")]
+    public float PredictedClose { get; set; }
+}
+\end{lstlisting}
+
+Note that \texttt{Close} is decorated with both \texttt{[LoadColumn(4)]} (column index in the CSV) and \texttt{[ColumnName("Label")]} (the ML.NET convention for the regression target column). The \texttt{Volume} field is at index 6 (not index 5) because index 5 is the Close column in Binance's candlestick format, and index 6 corresponds to the actual traded volume.
+
+\subsubsection{4.2.2. Data Loading and Splitting}
+The program locates the CSV file using a two-step path resolution strategy --- parent directory first, then hardcoded fallback --- to handle both development (running from the project root) and containerised (running from a \texttt{/app/publish} directory) contexts:
+
+\begin{lstlisting}
+string projectRoot = Directory.GetParent(
+    Directory.GetCurrentDirectory()).FullName;
+DataPath = Path.Combine(projectRoot, "NEW_GOLD.csv");
+
+if (!File.Exists(DataPath))
+    DataPath = @"D:\Coding Space\Project\Group3\NEW_GOLD.csv";
+
+var mlContext = new MLContext(seed: 42);
+IDataView dataView = mlContext.Data.LoadFromTextFile<ModelInput>(
+    path: DataPath, hasHeader: true, separatorChar: ',');
+
+var split = mlContext.Data.TrainTestSplit(dataView, testFraction: 0.2);
+\end{lstlisting}
+
+\subsubsection{4.2.3. Training Pipeline Construction and Fitting}
+The pipeline is constructed using ML.NET's fluent builder pattern. The \texttt{Concatenate} transform merges the four feature columns (which ML.NET requires to be explicitly listed) into a single \texttt{"Features"} vector column that the \texttt{LightGbm} trainer expects:
+
+\begin{lstlisting}
+var pipeline = mlContext.Transforms
+    .Concatenate("Features",
+        nameof(ModelInput.Open),
+        nameof(ModelInput.High),
+        nameof(ModelInput.Low),
+        nameof(ModelInput.Volume))
+    .Append(mlContext.Regression.Trainers.LightGbm(
+        labelColumnName: "Label",
+        featureColumnName: "Features",
+        learningRate: 0.005,
+        numberOfIterations: 1000));
+
+Console.WriteLine("Training LightGBM model...");
+ITransformer model = pipeline.Fit(split.TrainSet);
+\end{lstlisting}
+
+The call to \texttt{pipeline.Fit(split.TrainSet)} is synchronous and takes approximately 3--8 seconds on a modern CPU, depending on CPU speed and available cores. LightGBM internally parallelises histogram construction across CPU cores using OpenMP.
+
+\subsubsection{4.2.4. Model Serialisation}
+After training, the complete fitted pipeline (including the \texttt{Concatenate} transformer and the LightGBM model weights) is serialised to a portable ZIP archive:
+
+\begin{lstlisting}
+mlContext.Model.Save(model, split.TrainSet.Schema, "GoldModel.zip");
+Console.WriteLine($"[OK] Model saved to {ModelPath}");
+\end{lstlisting}
+
+The \texttt{GoldModel.zip} file encapsulates:
+\begin{itemize}
+  \item The LightGBM model binary (native format with all tree structures and leaf values).
+  \item The ML.NET schema definition mapping column names to data types.
+  \item The \texttt{Concatenate} transformer configuration.
+\end{itemize}
+
+This self-contained artifact can be loaded on any .NET platform without retraining.
+
+\subsubsection{4.2.5. Model Evaluation}
+The trained model is applied to the 200-sample test set and evaluated using three regression metrics:
+
+\begin{lstlisting}
+var predictions = model.Transform(split.TestSet);
+var metrics = mlContext.Regression.Evaluate(
+    predictions,
+    labelColumnName: "Label",
+    scoreColumnName: "Score");
+
+Console.WriteLine($"R2   : {metrics.RSquared:0.####}");
+Console.WriteLine($"MAE  : {metrics.MeanAbsoluteError:0.####}");
+Console.WriteLine($"RMSE : {metrics.RootMeanSquaredError:0.####}");
+\end{lstlisting}
+
+\subsubsection{4.2.6. Interactive Prediction REPL}
+After evaluation, the CLI enters an interactive loop that prompts the user to enter OHLCV values manually:
+
+\begin{lstlisting}
+var engine = mlContext.Model.CreatePredictionEngine
+             <ModelInput, ModelOutput>(model);
+while (true) {
+    Console.Write("> Enter Open price (or 'exit'): ");
+    string input = Console.ReadLine();
+    if (input?.ToLower() == "exit") break;
+    float openVal = float.Parse(input);
+    // ... read High, Low, Volume ...
+    
+    var sample = new ModelInput {
+        Open = openVal, High = highVal,
+        Low = lowVal, Volume = volVal
+    };
+    var result = engine.Predict(sample);
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine(
+        $"[RESULT] Predicted Close: {result.PredictedClose:0.00} USD");
+    Console.ResetColor();
+}
+\end{lstlisting}
+
+The REPL uses a regular (non-pooled) \texttt{PredictionEngine<T>} instance, which is acceptable in this single-threaded CLI context. The engine is created once before the loop and reused across all iterations, avoiding repeated model deserialisation overhead.
+
+\subsection{4.3. API Server Module (\texttt{GoldPrice\_API})}
+
+\subsubsection{4.3.1. Application Bootstrap (\texttt{Program.cs})}
+The application entry point follows the clean \texttt{WebApplication} builder pattern introduced in .NET 6. All service registrations are delegated to extension methods to keep \texttt{Program.cs} concise and readable:
+
+\begin{lstlisting}
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options => options.AddPolicy("AllowAll",
+    b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+builder.Services.AddCustomRateLimiting();  // Registers FixedWindow + HttpClient
+builder.Services.AddGoldPriceModel();      // Registers PredictionEnginePool
+
+var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseCors("AllowAll");
+app.UseRateLimiter();
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapPredictionEndpoints();
+app.Run();
+\end{lstlisting}
+
+The middleware ordering is deliberate: Swagger before CORS (to allow Swagger UI to make cross-origin API calls), CORS before Rate Limiter (to attach CORS headers before rate limit rejection), static files after rate limiter (static assets are not rate-limited).
+
+\subsubsection{4.3.2. Service Extensions (\texttt{ServiceExtensions.cs})}
+
+\textbf{Rate Limiting Registration}:
+\begin{lstlisting}
+public static IServiceCollection AddCustomRateLimiting(
+    this IServiceCollection services)
+{
+    services.AddRateLimiter(options => {
+        options.AddFixedWindowLimiter("fixed", policy => {
+            policy.PermitLimit = 5;
+            policy.Window = TimeSpan.FromSeconds(10);
+            policy.QueueProcessingOrder =
+                QueueProcessingOrder.OldestFirst;
+            policy.QueueLimit = 2;
+        });
+        options.RejectionStatusCode = 429;
+    });
+    services.AddHttpClient();
+    return services;
+}
+\end{lstlisting}
+
+\textbf{Model Pool Registration}:
+\begin{lstlisting}
+public static IServiceCollection AddGoldPriceModel(
+    this IServiceCollection services)
+{
+    string modelPath = Path.Combine(
+        Directory.GetCurrentDirectory(), "..",
+        "GoldPrice_CLI", "GoldModel.zip");
+    
+    if (!File.Exists(modelPath))
+        modelPath = @"D:\Coding Space\Project\Group3\
+                      GoldPrice_CLI\GoldModel.zip";
+
+    services.AddPredictionEnginePool<ModelInput, ModelOutput>()
+        .FromFile(modelName: "GoldModel",
+                  filePath: modelPath,
+                  watchForChanges: true);
+    return services;
+}
+\end{lstlisting}
+
+\subsubsection{4.3.3. Realtime Prediction Endpoint}
+The fully automated realtime endpoint demonstrates the highest technical complexity in the project, orchestrating three concurrent concerns (Binance API, Exchange Rate API, and ML inference) within a single asynchronous handler:
+
+\begin{lstlisting}
+apiGroup.MapGet("/realtime", async (
+    PredictionEnginePool<ModelInput, ModelOutput> pool,
+    IHttpClientFactory factory) =>
+{
+    var client = factory.CreateClient();
+    float open=0, high=0, low=0, volume=0, vndRate=25000f;
+
+    try {
+        // 1. Fetch live OHLCV (today's candlestick)
+        var res = await client.GetAsync(
+            "https://api.binance.com/api/v3/klines"
+            + "?symbol=PAXGUSDT&interval=1d&limit=1");
+        res.EnsureSuccessStatusCode();
+        var doc = JsonDocument.Parse(
+            await res.Content.ReadAsStringAsync());
+        var k = doc.RootElement[0];
+        open   = float.Parse(k[1].GetString(),
+                     CultureInfo.InvariantCulture);
+        high   = float.Parse(k[2].GetString(),
+                     CultureInfo.InvariantCulture);
+        low    = float.Parse(k[3].GetString(),
+                     CultureInfo.InvariantCulture);
+        volume = float.Parse(k[5].GetString(),
+                     CultureInfo.InvariantCulture);
+
+        // 2. Fetch USD/VND exchange rate
+        var er = await client.GetAsync(
+            "https://open.er-api.com/v6/latest/USD");
+        if (er.IsSuccessStatusCode) {
+            var erDoc = JsonDocument.Parse(
+                await er.Content.ReadAsStringAsync());
+            vndRate = erDoc.RootElement
+                .GetProperty("rates")
+                .GetProperty("VND").GetSingle();
+        }
+    }
+    catch { return Results.StatusCode(500); }
+
+    // 3. Run ML inference
+    var input = new ModelInput {
+        Open=open, High=high, Low=low, Volume=volume };
+    var pred = pool.Predict("GoldModel", input);
+
+    return Results.Ok(new {
+        success = true,
+        data = new {
+            inputsUsed = new { open, high, low, volume },
+            predictedClose = pred.PredictedClose,
+            predictedCloseVnd = pred.PredictedClose * vndRate,
+            liveWorldPrice = open,
+            exchangeRateVnd = vndRate
+        }
+    });
+})
+.WithName("GetRealtimeGoldPricePrediction")
+.RequireRateLimiting("fixed");
+\end{lstlisting}
+
+\subsection{4.4. Web Interface (\texttt{wwwroot/index.html})}
+
+\subsubsection{4.4.1. Design Language: Glassmorphism}
+The X-AURUM web interface adopts the \textbf{Glassmorphism} design trend, characterised by:
+\begin{itemize}
+  \item \textbf{Frosted glass cards}: Achieved via \texttt{backdrop-filter: blur(12px)} and semi-transparent\\\texttt{background: rgba(255,255,255,0.08)} backgrounds.
+  \item \textbf{Dark mode palette}: A deep navy/charcoal background gradient using\\\texttt{linear-gradient(135deg, \#0f0c29, \#302b63, \#24243e)} that conveys premium financial software aesthetics.
+  \item \textbf{Accent colours}: Gold-toned highlights (\texttt{\#FFD700}) for price values and primary action elements, reinforcing the gold price theme.
+  \item \textbf{Smooth transitions}: CSS \texttt{transition: all 0.3s ease} on interactive elements.
+\end{itemize}
+
+\subsubsection{4.4.2. Automatic Price Loading}
+On page load, the JavaScript immediately calls the realtime endpoint without any user interaction, displaying the live predicted gold price within approximately 500 ms:
+
+\begin{lstlisting}[language=Python]
+// In index.html <script>
+async function loadRealtimePrice() {
+    const response = await fetch('/api/v1/predictions/realtime');
+    const result = await response.json();
+    if (result.success) {
+        document.getElementById('predicted-usd').textContent
+            = result.data.predictedClose.toFixed(2) + ' USD';
+        document.getElementById('predicted-vnd').textContent
+            = (result.data.predictedCloseVnd / 1e6).toFixed(2)
+              + ' M VND';
+        document.getElementById('live-price').textContent
+            = result.data.liveWorldPrice.toFixed(2) + ' USD';
+        document.getElementById('exchange-rate').textContent
+            = result.data.exchangeRateVnd.toLocaleString() + ' VND/USD';
+    }
+}
+window.addEventListener('DOMContentLoaded', loadRealtimePrice);
+\end{lstlisting}
+
+\subsubsection{4.4.3. Manual Prediction Form}
+A secondary card on the page exposes a manual prediction form with four input fields (Open, High, Low, Volume). On form submission, the JavaScript POSTs the entered values to \texttt{/api/v1/predictions} and displays the result:
+
+\begin{lstlisting}[language=Python]
+document.getElementById('predict-form').addEventListener(
+    'submit', async (e) => {
+    e.preventDefault();
+    const body = {
+        open:   parseFloat(document.getElementById('inp-open').value),
+        high:   parseFloat(document.getElementById('inp-high').value),
+        low:    parseFloat(document.getElementById('inp-low').value),
+        volume: parseFloat(document.getElementById('inp-volume').value)
+    };
+    const response = await fetch('/api/v1/predictions', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    });
+    const result = await response.json();
+    document.getElementById('manual-result').textContent
+        = result.data.predictedClose.toFixed(2) + ' USD';
+});
+\end{lstlisting}
+
+\subsubsection{4.4.4. Static File Serving}
+The \texttt{index.html} file is placed in \texttt{wwwroot/} and served by ASP.NET Core's built-in static file middleware (\texttt{app.UseDefaultFiles(); app.UseStaticFiles()}). This eliminates the need for a separate web server (Nginx, Apache) to serve the frontend, keeping the Docker image architecture simple --- the single \texttt{ghcr.io/thanhtrunggdev/group3:latest} container serves both the API and the web UI.
+
+\newpage
