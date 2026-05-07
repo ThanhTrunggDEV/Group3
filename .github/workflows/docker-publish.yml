@@ -53,3 +53,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # Trigger deployment via n8n webhook
+      - name: Call n8n deployment webhook
+        if: github.event_name != 'pull_request'
+        run: curl -X GET https://n8n.thanhtrungdev.com/webhook/fdf9dc5c-7e98-4ea9-b1ec-354006e6ca02
